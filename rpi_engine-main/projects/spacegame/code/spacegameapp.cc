@@ -19,7 +19,7 @@
 #include "core/cvar.h"
 #include "render/physics.h"
 #include <chrono>
-#include "spaceship.h"
+#include "golf.h"
 
 using namespace Display;
 using namespace Render;
@@ -222,8 +222,8 @@ SpaceGameApp::Run()
         lights[i] = Render::LightServer::CreatePointLight(translation, color, Core::RandomFloat() * 4.0f, 1.0f + (15 + Core::RandomFloat() * 10.0f));
     }
 
-    SpaceShip ship;
-    ship.model = LoadModel("assets/space/spaceship.glb");
+    GolfClub club;
+    club.model = LoadModel("assets/space/spaceship.glb");
 
     std::clock_t c_start = std::clock();
     double dt = 0.01667f;
@@ -244,8 +244,8 @@ SpaceGameApp::Run()
             ShaderResource::ReloadShaders();
         }
 
-        ship.Update(dt);
-        ship.CheckCollisions();
+        club.Update(dt);
+        club.CheckCollisions();
 
         // Store all drawcalls in the render device
         for (auto const& tile : tiles)
@@ -253,7 +253,7 @@ SpaceGameApp::Run()
             RenderDevice::Draw(std::get<0>(tile), std::get<2>(tile));
         }
 
-        RenderDevice::Draw(ship.model, ship.transform);
+        RenderDevice::Draw(club.model, club.transform);
 
         // Execute the entire rendering pipeline
         RenderDevice::Render(this->window, dt);

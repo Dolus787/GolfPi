@@ -1,6 +1,7 @@
 #pragma once
 #include "render/model.h"
 
+
 namespace Render
 {
     struct ParticleEmitter;
