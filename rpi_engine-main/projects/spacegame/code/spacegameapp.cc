@@ -214,6 +214,8 @@ SpaceGameApp::Run()
     
     Input::Keyboard* kbd = Input::GetDefaultKeyboard();
 
+    Input::Gamepad Gamepad = Input::Gamepad();
+
     const int numLights = 4;
     Render::PointLightId lights[numLights];
     // Setup lights
@@ -232,9 +234,10 @@ SpaceGameApp::Run()
         lights[i] = Render::LightServer::CreatePointLight(translation, color, Core::RandomFloat() * 4.0f, 1.0f + (15 + Core::RandomFloat() * 10.0f));
     }
 
-    GolfBall club;
-    club.model = LoadModel("assets/space/spaceship.glb");
 
+    GolfBall ball;
+    ball.model = LoadModel("assets/space/spaceship.glb");
+    ball.Gamepad = &Gamepad;
     std::clock_t c_start = std::clock();
     double dt = 0.01667f;
 
@@ -256,9 +259,9 @@ SpaceGameApp::Run()
         {
             ShaderResource::ReloadShaders();
         }
-
-        club.Update(dt);
-        club.CheckCollisions();
+        Gamepad.Update();
+        ball.Update(dt);
+        ball.CheckCollisions();
 
         // Store all drawcalls in the render device
         for (auto const& tile : tiles)
@@ -266,7 +269,7 @@ SpaceGameApp::Run()
             RenderDevice::Draw(std::get<0>(tile), std::get<2>(tile));
         }
 
-        RenderDevice::Draw(club.model, club.transform);
+        RenderDevice::Draw(ball.model, ball.transform);
 
         // Execute the entire rendering pipeline
         RenderDevice::Render(this->window, dt);
@@ -277,7 +280,7 @@ SpaceGameApp::Run()
         auto timeEnd = std::chrono::steady_clock::now();
         dt = std::min(0.04, std::chrono::duration<double>(timeEnd - timeStart).count());
 
-        if (kbd->pressed[Input::Key::Code::Escape])
+        if (kbd->pressed[Input::Key::Code::Escape]||Gamepad.startPressed)
             this->Exit();
 	}
 }

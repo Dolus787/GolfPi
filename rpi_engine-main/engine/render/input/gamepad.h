@@ -9,8 +9,11 @@ namespace Input
     struct Gamepad
     {
         float axis[6];
+        unsigned char buttons[14];
+
         // TODO
-        int axisCount=0;
+        int axisCount = 0;
+        int buttonCount = 0;
         void Update();
 
         float GetLeftJoystickX();
@@ -19,6 +22,12 @@ namespace Input
         float GetRightJoystickY();
         float GetRightTrigger();
         float GetLeftTrigger();
+        bool startPressed = false;
+        bool startReleased = false;
+        bool backPressed = false;
+        bool backReleased = false;
+        bool aPressed = false;
+        bool aReleased = false;
     };
 
 }

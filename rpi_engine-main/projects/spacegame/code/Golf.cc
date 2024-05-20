@@ -14,7 +14,6 @@ namespace Game
 {
     GolfBall::GolfBall()
     {
-        Gamepad = Input::Gamepad();
         uint32_t numParticles = 2048;
         this->particleEmitterLeft = new ParticleEmitter(numParticles);
         this->particleEmitterLeft->data = {
@@ -47,7 +46,6 @@ namespace Game
         Mouse* mouse = Input::GetDefaultMouse();
         Keyboard* kbd = Input::GetDefaultKeyboard();
 
-        Gamepad.Update();
 
         Camera* cam = CameraManager::GetCamera(CAMERA_MAIN);
 
@@ -64,7 +62,7 @@ namespace Game
         }*/
 
 
-        this->currentSpeed = mix(this->currentSpeed, this->boostSpeed*Gamepad.GetLeftJoystickY(), std::min(1.0f, dt * 30.0f));
+        this->currentSpeed = mix(this->currentSpeed, this->boostSpeed*Gamepad->GetLeftJoystickY(), std::min(1.0f, dt * 30.0f));
 
 
         vec3 desiredVelocity = vec3(0, 0, this->currentSpeed);
@@ -77,9 +75,9 @@ namespace Game
         //float rotY = kbd->held[Key::Up] ? -1.0f : kbd->held[Key::Down] ? 1.0f : 0.0f;
         //float rotZ = kbd->held[Key::A] ? -1.0f : kbd->held[Key::D] ? 1.0f : 0.0f;
 
-        float rotX = -Gamepad.GetLeftJoystickX();
-        float rotY = -Gamepad.GetRightJoystickY();
-        float rotZ = Gamepad.GetRightJoystickX();
+        float rotX = -Gamepad->GetLeftJoystickX();
+        float rotY = -Gamepad->GetRightJoystickY();
+        float rotZ = Gamepad->GetRightJoystickX();
 
 
 
