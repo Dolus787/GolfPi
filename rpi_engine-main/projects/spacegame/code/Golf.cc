@@ -14,7 +14,6 @@ namespace Game
 {
     GolfBall::GolfBall()
     {
-        Gamepad = Input::Gamepad();
         uint32_t numParticles = 2048;
         this->particleEmitterLeft = new ParticleEmitter(numParticles);
         this->particleEmitterLeft->data = {
@@ -47,24 +46,9 @@ namespace Game
         Mouse* mouse = Input::GetDefaultMouse();
         Keyboard* kbd = Input::GetDefaultKeyboard();
 
-        Gamepad.Update();
-
         Camera* cam = CameraManager::GetCamera(CAMERA_MAIN);
 
-        /*if (kbd->held[Key::W])
-        {
-            if (kbd->held[Key::Shift])
-                this->currentSpeed = mix(this->currentSpeed, this->boostSpeed, std::min(1.0f, dt * 30.0f));
-            else
-                this->currentSpeed = mix(this->currentSpeed, this->normalSpeed, std::min(1.0f, dt * 90.0f));
-        }
-        else
-        {
-            this->currentSpeed = 0;
-        }*/
-
-
-        this->currentSpeed = mix(this->currentSpeed, this->boostSpeed*Gamepad.GetLeftJoystickY(), std::min(1.0f, dt * 30.0f));
+        this->currentSpeed = mix(this->currentSpeed, this->boostSpeed*Gamepad->GetLeftJoystickY(), std::min(1.0f, dt * 30.0f));
 
 
         vec3 desiredVelocity = vec3(0, 0, this->currentSpeed);
@@ -72,19 +56,9 @@ namespace Game
 
         this->linearVelocity = mix(this->linearVelocity, desiredVelocity, dt * accelerationFactor);
 
-
-        //float rotX = kbd->held[Key::Left] ? 1.0f : kbd->held[Key::Right] ? -1.0f : 0.0f;
-        //float rotY = kbd->held[Key::Up] ? -1.0f : kbd->held[Key::Down] ? 1.0f : 0.0f;
-        //float rotZ = kbd->held[Key::A] ? -1.0f : kbd->held[Key::D] ? 1.0f : 0.0f;
-
-        float rotX = -Gamepad.GetLeftJoystickX();
-        float rotY = -Gamepad.GetRightJoystickY();
-        float rotZ = Gamepad.GetRightJoystickX();
-
-
-
-
-        
+        float rotX = -Gamepad->GetLeftJoystickX();
+        float rotY = -Gamepad->GetRightJoystickY();
+        float rotZ = Gamepad->GetRightJoystickX();
         this->position += this->linearVelocity * dt * 10.0f;
 
         const float rotationSpeed = 1.8f * dt;
@@ -106,20 +80,6 @@ namespace Game
         vec3 desiredCamPos = this->position + vec3(this->transform * vec4(0, camOffsetY, -4.0f, 0));
         this->camPos = mix(this->camPos, desiredCamPos, dt * cameraSmoothFactor);
         cam->view = lookAt(this->camPos, this->camPos + vec3(this->transform[2]), vec3(this->transform[1]));
-
-        const float thrusterPosOffset = 0.365f;
-        this->particleEmitterLeft->data.origin = glm::vec4(vec3(this->position + (vec3(this->transform[0]) * -thrusterPosOffset)) + (vec3(this->transform[2]) * emitterOffset), 1);
-        this->particleEmitterLeft->data.dir = glm::vec4(glm::vec3(-this->transform[2]), 0);
-        this->particleEmitterRight->data.origin = glm::vec4(vec3(this->position + (vec3(this->transform[0]) * thrusterPosOffset)) + (vec3(this->transform[2]) * emitterOffset), 1);
-        this->particleEmitterRight->data.dir = glm::vec4(glm::vec3(-this->transform[2]), 0);
-
-        float t = (currentSpeed / this->normalSpeed);
-        this->particleEmitterLeft->data.startSpeed = 1.2 + (3.0f * t);
-        this->particleEmitterLeft->data.endSpeed = 0.0f + (3.0f * t);
-        this->particleEmitterRight->data.startSpeed = 1.2 + (3.0f * t);
-        this->particleEmitterRight->data.endSpeed = 0.0f + (3.0f * t);
-        //this->particleEmitter->data.decayTime = 0.16f;//+ (0.01f  * t);
-        //this->particleEmitter->data.randomTimeOffsetDist = 0.06f;/// +(0.01f * t);
     }
 
     bool

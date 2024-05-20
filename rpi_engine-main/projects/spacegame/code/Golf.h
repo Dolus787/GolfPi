@@ -39,7 +39,7 @@ namespace Game
         Render::ParticleEmitter* particleEmitterRight;
         float emitterOffset = -0.5f;
 
-        Input::Gamepad Gamepad;
+        Input::Gamepad *Gamepad;
 
         void Update(float dt);
 
