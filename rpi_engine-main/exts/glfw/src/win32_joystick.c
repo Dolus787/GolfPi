@@ -247,7 +247,7 @@ static void closeJoystick(_GLFWjoystickWin32* js)
     }
 
     free(js->name);
-    free(js->axes);
+    free(js->axis);
     free(js->buttons);
     free(js->objects);
     memset(js, 0, sizeof(_GLFWjoystickWin32));
@@ -430,7 +430,7 @@ static BOOL CALLBACK deviceCallback(const DIDEVICEINSTANCE* di, void* user)
     js->device = device;
     js->guid = di->guidInstance;
     js->axisCount = data.axisCount + data.sliderCount;
-    js->axes = calloc(js->axisCount, sizeof(float));
+    js->axis = calloc(js->axisCount, sizeof(float));
     js->buttonCount += data.buttonCount + data.povCount * 4;
     js->buttons = calloc(js->buttonCount, 1);
     js->objects = data.objects;
@@ -475,7 +475,7 @@ static GLFWbool openXinputDevice(DWORD index)
 
     js = _glfw.win32_js + joy;
     js->axisCount = 6;
-    js->axes = calloc(js->axisCount, sizeof(float));
+    js->axis = calloc(js->axisCount, sizeof(float));
     js->buttonCount = 14;
     js->buttons = calloc(js->buttonCount, 1);
     js->present = GLFW_TRUE;
@@ -531,7 +531,7 @@ static GLFWbool pollJoystickState(_GLFWjoystickWin32* js, int mode)
                 case _GLFW_TYPE_AXIS:
                 case _GLFW_TYPE_SLIDER:
                 {
-                    js->axes[ai++] = (*((LONG*) data) + 0.5f) / 32767.5f;
+                    js->axis[ai++] = (*((LONG*) data) + 0.5f) / 32767.5f;
                     break;
                 }
 
@@ -607,37 +607,37 @@ static GLFWbool pollJoystickState(_GLFWjoystickWin32* js, int mode)
                            xis.Gamepad.sThumbLY * xis.Gamepad.sThumbLY)) >
             (double) XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)
         {
-            js->axes[0] = (xis.Gamepad.sThumbLX + 0.5f) / 32767.f;
-            js->axes[1] = (xis.Gamepad.sThumbLY + 0.5f) / 32767.f;
+            js->axis[0] = (xis.Gamepad.sThumbLX + 0.5f) / 32767.f;
+            js->axis[1] = (xis.Gamepad.sThumbLY + 0.5f) / 32767.f;
         }
         else
         {
-            js->axes[0] = 0.f;
-            js->axes[1] = 0.f;
+            js->axis[0] = 0.f;
+            js->axis[1] = 0.f;
         }
 
         if (sqrt((double) (xis.Gamepad.sThumbRX * xis.Gamepad.sThumbRX +
                            xis.Gamepad.sThumbRY * xis.Gamepad.sThumbRY)) >
             (double) XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE)
         {
-            js->axes[2] = (xis.Gamepad.sThumbRX + 0.5f) / 32767.f;
-            js->axes[3] = (xis.Gamepad.sThumbRY + 0.5f) / 32767.f;
+            js->axis[2] = (xis.Gamepad.sThumbRX + 0.5f) / 32767.f;
+            js->axis[3] = (xis.Gamepad.sThumbRY + 0.5f) / 32767.f;
         }
         else
         {
-            js->axes[2] = 0.f;
-            js->axes[3] = 0.f;
+            js->axis[2] = 0.f;
+            js->axis[3] = 0.f;
         }
 
         if (xis.Gamepad.bLeftTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
-            js->axes[4] = xis.Gamepad.bLeftTrigger / 127.5f - 1.f;
+            js->axis[4] = xis.Gamepad.bLeftTrigger / 127.5f - 1.f;
         else
-            js->axes[4] = -1.f;
+            js->axis[4] = -1.f;
 
         if (xis.Gamepad.bRightTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
-            js->axes[5] = xis.Gamepad.bRightTrigger / 127.5f - 1.f;
+            js->axis[5] = xis.Gamepad.bRightTrigger / 127.5f - 1.f;
         else
-            js->axes[5] = -1.f;
+            js->axis[5] = -1.f;
 
         for (i = 0;  i < 14;  i++)
             js->buttons[i] = (xis.Gamepad.wButtons & buttons[i]) ? 1 : 0;
@@ -739,7 +739,7 @@ const float* _glfwPlatformGetJoystickAxes(int joy, int* count)
         return NULL;
 
     *count = js->axisCount;
-    return js->axes;
+    return js->axis;
 }
 
 const unsigned char* _glfwPlatformGetJoystickButtons(int joy, int* count)

@@ -38,7 +38,7 @@ typedef struct _GLFWjoystickLinux
 {
     GLFWbool        present;
     int             fd;
-    float*          axes;
+    float*          axis;
     int             axisCount;
     unsigned char*  buttons;
     int             buttonCount;

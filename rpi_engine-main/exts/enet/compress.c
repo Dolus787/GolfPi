@@ -156,13 +156,13 @@ enet_symbol_rescale (ENetSymbol * symbol)
     } \
 }
 
-#define ENET_CONTEXT_ENCODE(context, symbol_, value_, under_, count_, update, minimum) \
+#define ENET_CONTEXT_ENCODE(context, symbol_, value_, under_, count_, Update, minimum) \
 { \
     under_ = value*minimum; \
     count_ = minimum; \
     if (! (context) -> symbols) \
     { \
-        ENET_SYMBOL_CREATE (symbol_, value_, update); \
+        ENET_SYMBOL_CREATE (symbol_, value_, Update); \
         (context) -> symbols = symbol_ - (context); \
     } \
     else \
@@ -172,9 +172,9 @@ enet_symbol_rescale (ENetSymbol * symbol)
         { \
             if (value_ < node -> value) \
             { \
-                node -> under += update; \
+                node -> under += Update; \
                 if (node -> left) { node += node -> left; continue; } \
-                ENET_SYMBOL_CREATE (symbol_, value_, update); \
+                ENET_SYMBOL_CREATE (symbol_, value_, Update); \
                 node -> left = symbol_ - node; \
             } \
             else \
@@ -182,15 +182,15 @@ enet_symbol_rescale (ENetSymbol * symbol)
             { \
                 under_ += node -> under; \
                 if (node -> right) { node += node -> right; continue; } \
-                ENET_SYMBOL_CREATE (symbol_, value_, update); \
+                ENET_SYMBOL_CREATE (symbol_, value_, Update); \
                 node -> right = symbol_ - node; \
             } \
             else \
             { \
                 count_ += node -> count; \
                 under_ += node -> under - node -> count; \
-                node -> under += update; \
-                node -> count += update; \
+                node -> under += Update; \
+                node -> count += Update; \
                 symbol_ = node; \
             } \
             break; \
@@ -370,7 +370,7 @@ enet_range_coder_compress (void * context, const ENetBuffer * inBuffers, size_t 
     } \
 }
 
-#define ENET_CONTEXT_DECODE(context, symbol_, code, value_, under_, count_, update, minimum, createRoot, visitNode, createRight, createLeft) \
+#define ENET_CONTEXT_DECODE(context, symbol_, code, value_, under_, count_, Update, minimum, createRoot, visitNode, createRight, createLeft) \
 { \
     under_ = 0; \
     count_ = minimum; \
@@ -394,7 +394,7 @@ enet_range_coder_compress (void * context, const ENetBuffer * inBuffers, size_t 
             else \
             if (code < after - before) \
             { \
-                node -> under += update; \
+                node -> under += Update; \
                 if (node -> left) { node += node -> left; continue; } \
                 createLeft; \
             } \
@@ -403,8 +403,8 @@ enet_range_coder_compress (void * context, const ENetBuffer * inBuffers, size_t 
                 value_ = node -> value; \
                 count_ += node -> count; \
                 under_ = after - before; \
-                node -> under += update; \
-                node -> count += update; \
+                node -> under += Update; \
+                node -> count += Update; \
                 symbol_ = node; \
             } \
             break; \
@@ -412,28 +412,28 @@ enet_range_coder_compress (void * context, const ENetBuffer * inBuffers, size_t 
     } \
 }
 
-#define ENET_CONTEXT_TRY_DECODE(context, symbol_, code, value_, under_, count_, update, minimum, exclude) \
-ENET_CONTEXT_DECODE (context, symbol_, code, value_, under_, count_, update, minimum, return 0, exclude (node -> value, after, before), return 0, return 0)
+#define ENET_CONTEXT_TRY_DECODE(context, symbol_, code, value_, under_, count_, Update, minimum, exclude) \
+ENET_CONTEXT_DECODE (context, symbol_, code, value_, under_, count_, Update, minimum, return 0, exclude (node -> value, after, before), return 0, return 0)
 
-#define ENET_CONTEXT_ROOT_DECODE(context, symbol_, code, value_, under_, count_, update, minimum, exclude) \
-ENET_CONTEXT_DECODE (context, symbol_, code, value_, under_, count_, update, minimum, \
+#define ENET_CONTEXT_ROOT_DECODE(context, symbol_, code, value_, under_, count_, Update, minimum, exclude) \
+ENET_CONTEXT_DECODE (context, symbol_, code, value_, under_, count_, Update, minimum, \
     { \
         value_ = code / minimum; \
         under_ = code - code%minimum; \
-        ENET_SYMBOL_CREATE (symbol_, value_, update); \
+        ENET_SYMBOL_CREATE (symbol_, value_, Update); \
         (context) -> symbols = symbol_ - (context); \
     }, \
     exclude (node -> value, after, before), \
     { \
         value_ = node->value + 1 + (code - after)/minimum; \
         under_ = code - (code - after)%minimum; \
-        ENET_SYMBOL_CREATE (symbol_, value_, update); \
+        ENET_SYMBOL_CREATE (symbol_, value_, Update); \
         node -> right = symbol_ - node; \
     }, \
     { \
         value_ = node->value - 1 - (after - before - code - 1)/minimum; \
         under_ = code - (after - before - code - 1)%minimum; \
-        ENET_SYMBOL_CREATE (symbol_, value_, update); \
+        ENET_SYMBOL_CREATE (symbol_, value_, Update); \
         node -> left = symbol_ - node; \
     }) \
 

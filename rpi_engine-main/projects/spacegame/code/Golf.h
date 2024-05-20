@@ -1,6 +1,8 @@
 #pragma once
 #include "render/model.h"
 
+#include "render/input/gamepad.h"
+
 namespace Render
 {
     struct ParticleEmitter;
@@ -9,9 +11,9 @@ namespace Render
 namespace Game
 {
 
-    struct GolfClub
+    struct GolfBall
     {
-        GolfClub();
+        GolfBall();
 
         glm::vec3 position = glm::vec3(0);
         glm::quat orientation = glm::identity<glm::quat>();
@@ -36,6 +38,8 @@ namespace Game
         Render::ParticleEmitter* particleEmitterLeft;
         Render::ParticleEmitter* particleEmitterRight;
         float emitterOffset = -0.5f;
+
+        Input::Gamepad Gamepad;
 
         void Update(float dt);
 

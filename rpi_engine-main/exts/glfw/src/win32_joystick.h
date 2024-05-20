@@ -43,7 +43,7 @@ typedef struct _GLFWjoyobjectWin32
 typedef struct _GLFWjoystickWin32
 {
     GLFWbool                present;
-    float*                  axes;
+    float*                  axis;
     int                     axisCount;
     unsigned char*          buttons;
     int                     buttonCount;

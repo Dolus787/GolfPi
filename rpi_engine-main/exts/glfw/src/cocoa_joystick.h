@@ -49,7 +49,7 @@ typedef struct _GLFWjoystickNS
     CFMutableArrayRef buttonElements;
     CFMutableArrayRef hatElements;
 
-    float*          axes;
+    float*          axis;
     unsigned char*  buttons;
 } _GLFWjoystickNS;
 
