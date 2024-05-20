@@ -19,7 +19,9 @@
 #include "core/cvar.h"
 #include "render/physics.h"
 #include <chrono>
-#include "golf.h"
+#include "Golf.h"
+#include <string>
+#include "GolfMap.h"
 
 using namespace Display;
 using namespace Render;
@@ -75,12 +77,17 @@ SpaceGameApp::Open()
 	return false;
 }
 
+
 //------------------------------------------------------------------------------
 /**
 */
 void
 SpaceGameApp::Run()
 {
+    std::vector<GolfMap> maps;
+    maps.push_back(GolfMap("C2H11122C200C1C00212C00C111131211OO12000H0C1C200020000C22212C00000000W00000000G00", { 4,1 }, { 7,9 }, 9));
+    GolfMap def = GolfMap();
+    int selectedMap = 0;
     int w;
     int h;
     this->window->GetSize(w, h);
@@ -88,29 +95,32 @@ SpaceGameApp::Run()
     Camera* cam = CameraManager::GetCamera(CAMERA_MAIN);
     cam->projection = projection;
     std::vector<std::tuple<ModelId, Physics::ColliderId, glm::mat4>> tiles;
-    enum tiletype {
-        bump
-    };
-    ModelId models[6] = {
+    ModelId models[] = {
         LoadModel("assets/golf/GLB/corner.glb"),
-        LoadModel("assets/golf/GLB/block.glb"),
         LoadModel("assets/golf/GLB/castle.glb"),
+        LoadModel("assets/golf/GLB/side.glb"),
+        LoadModel("assets/golf/GLB/straight.glb"),
+        LoadModel("assets/golf/GLB/end.glb"),
+        LoadModel("assets/golf/GLB/open.glb"),
+        LoadModel("assets/golf/GLB/windmill.glb"),
         LoadModel("assets/golf/GLB/club-red.glb"),
-        LoadModel("assets/golf/GLB/flag-red.glb"),
-        LoadModel("assets/golf/GLB/block.glb"),
+        LoadModel("assets/golf/GLB/flag-red.glb")
     };
 
-    Physics::ColliderMeshId colliderMeshes[6] = {
+    Physics::ColliderMeshId colliderMeshes[] = {
         Physics::LoadColliderMesh("assets/golf/GLB/corner.glb"),
-        Physics::LoadColliderMesh("assets/golf/GLB/block.glb"),
         Physics::LoadColliderMesh("assets/golf/GLB/castle.glb"),
+        Physics::LoadColliderMesh("assets/golf/GLB/side.glb"),
+        Physics::LoadColliderMesh("assets/golf/GLB/straight.glb"),
+        Physics::LoadColliderMesh("assets/golf/GLB/end.glb"),
+        Physics::LoadColliderMesh("assets/golf/GLB/open.glb"),
+        Physics::LoadColliderMesh("assets/golf/GLB/windmill.glb"),
         Physics::LoadColliderMesh("assets/golf/GLB/club-red.glb"),
         Physics::LoadColliderMesh("assets/golf/GLB/flag-red.glb"),
-        Physics::LoadColliderMesh("assets/golf/GLB/block.glb"),
     };
 
     // Setup asteroids near
-    for (int i = 0; i < 25; i++)
+    for (int i = 0; i < maps[selectedMap].map.size(); i++)
     {
         std::tuple<ModelId, Physics::ColliderId, glm::mat4> tile;
         size_t resourceIndex = (size_t)(0);
@@ -118,10 +128,10 @@ SpaceGameApp::Run()
         float span = 20.0f;
         glm::vec3 translation = glm::vec3(
             // iterate every five steps
-            (int)(i / 5)+1,
+            (int)(i / maps[selectedMap].width)+1,
             0+1, 
             // iterate every step reset at five
-            (i % 5)+1
+            (i % maps[selectedMap].width) + 1
         );
         glm::vec3 rotationAxis = normalize(translation);
         float rotation = 0;
