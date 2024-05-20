@@ -4,6 +4,7 @@
 //------------------------------------------------------------------------------
 #include "config.h"
 #include "gamepad.h"
+#include <vector>
 namespace Input
 {
     void Gamepad::Update() {
@@ -22,7 +23,11 @@ namespace Input
         for (int i = 0; i < buttonCount; i++) {
             buttons[i] = buttonsTemp[i];
             if (buttons[i] == GLFW_PRESS) {
-
+                /// TAKE NOTE ARON THIS IS PROBABLY CHEAPER // Tage
+				// std::vector<bool> buttonPressed[14];
+				// std::vector<bool> buttonReleased[14];
+                // buttonPressed[i] = true;
+                // buttonReleased[i] = false;
                 //Add new buttons here and header
                 if (i == 7) {
                     startPressed = true;
