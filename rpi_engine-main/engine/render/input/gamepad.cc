@@ -7,9 +7,11 @@
 namespace Input
 {
     void Gamepad::Update() {
+
         for (int i = 0; i < buttonCount; i++) {
             buttons[i] = 0;
         }
+        
         const float* axisTemp = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axisCount);
         const unsigned char* buttonsTemp = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttonCount);
 
@@ -31,19 +33,53 @@ namespace Input
                     backReleased = false;
                 }
                 if (i == 0) {
-                    aReleased = false;
                     aPressed = true;
+                    aReleased = false;
+                }
+                if (i == 3) {
+                    yPressed = true;
+                    yReleased = false;
                 }
             }
             else if (buttons[i] == GLFW_RELEASE) {
-                if (i == 7 && startPressed) {
-                    startReleased = true;
+                //Released only true for one frame
+                if (i == 7) {
+                    if (startPressed) {
+                        startReleased = true;
+                    }
+                    else {
+                        startReleased = false;
+                    }
+                    startPressed = false;
                 }
+
                 if (i == 6 && backPressed) {
-                    backReleased = true;
+                    if (backPressed) {
+                        backReleased = true;
+                    }
+                    else {
+                        backReleased = false;
+                    }
+                    backPressed = false;
                 }
+
                 if (i == 0 && aPressed) {
-                    aReleased = true;
+                    if (aPressed) {
+                        aReleased = true;
+                    }
+                    else {
+                        aReleased = false;
+                    }
+                    aPressed = false;
+                }
+                if (i == 3 && yPressed) {
+                    if (yPressed) {
+                        yReleased = true;
+                    }
+                    else {
+                        yReleased = false;
+                    }
+                    yPressed = false;
                 }
             }
         }

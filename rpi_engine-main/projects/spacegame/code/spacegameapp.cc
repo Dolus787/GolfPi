@@ -120,6 +120,7 @@ SpaceGameApp::Run()
     };
 
     // Setup asteroids near
+
     for (int i = 0; i < maps[selectedMap].map.size(); i++)
     {
         std::tuple<ModelId, Physics::ColliderId, glm::mat4> tile;

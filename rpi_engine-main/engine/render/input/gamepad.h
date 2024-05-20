@@ -11,7 +11,6 @@ namespace Input
         float axis[6];
         unsigned char buttons[14];
 
-        // TODO
         int axisCount = 0;
         int buttonCount = 0;
         void Update();
@@ -22,12 +21,18 @@ namespace Input
         float GetRightJoystickY();
         float GetRightTrigger();
         float GetLeftTrigger();
+
         bool startPressed = false;
         bool startReleased = false;
+        
         bool backPressed = false;
         bool backReleased = false;
+
         bool aPressed = false;
         bool aReleased = false;
+ 
+        bool yPressed = false;
+        bool yReleased = false;
     };
 
 }
