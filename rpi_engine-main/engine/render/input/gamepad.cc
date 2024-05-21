@@ -7,7 +7,7 @@
 namespace Input
 {
     Gamepad::Gamepad() {
-        for (int i = 0; i !=__LAST__; i++) {
+        for (int i = 0; i !=__NUM_BUTTONS__; i++) {
             buttonstates.push_back(buttonState());
         }
     }
@@ -43,7 +43,7 @@ namespace Input
             }
         }
     }
-   
+    
     float Gamepad::GetLeftJoystickX() {
         if (axisCount == 0){ 
             std::cout << "NO CONTROLLER \n";

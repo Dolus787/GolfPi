@@ -190,8 +190,10 @@ SpaceGameApp::Run()
 
 
     GolfBall ball;
-    ball.model = LoadModel("assets/space/spaceship.glb");
+    ball.model = LoadModel("assets/golf/GLB/ball-red.glb");
     ball.Gamepad = &Gamepad;
+    ball.position = manager->maps[manager->selectedMap].spawnPos;
+
     std::clock_t c_start = std::clock();
     double dt = 0.01667f;
 
@@ -215,7 +217,6 @@ SpaceGameApp::Run()
         }
         Gamepad.Update();
         ball.Update(dt);
-        ball.CheckCollisions();
 
         // Store all drawcalls in the render device
         for (auto const& tile : manager->tiles)

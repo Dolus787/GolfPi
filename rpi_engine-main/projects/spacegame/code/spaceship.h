@@ -22,11 +22,11 @@ struct SpaceShip
 
     const float normalSpeed = 1.0f;
     const float boostSpeed = normalSpeed * 2.0f;
-    const float accelerationFactor = 1.0f;
+    const float friction = 1.0f;
     const float camOffsetY = 1.0f;
     const float cameraSmoothFactor = 10.0f;
 
-    float currentSpeed = 0.0f;
+    float hitpower = 0.0f;
 
     float rotationZ = 0;
     float rotXSmooth = 0;
@@ -40,7 +40,7 @@ struct SpaceShip
 
     void Update(float dt);
 
-    bool CheckCollisions();
+    bool physicsUpdate();
     
     const glm::vec3 colliderEndPoints[8] = {
         glm::vec3(-1.10657, -0.480347, -0.346542),  // right wing

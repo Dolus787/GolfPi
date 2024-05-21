@@ -22,7 +22,8 @@ namespace Input
         right,
         down,
         left,
-        __LAST__
+
+        __NUM_BUTTONS__
     };
 
     struct buttonState {
