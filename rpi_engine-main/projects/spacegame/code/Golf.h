@@ -13,7 +13,6 @@ namespace Game
 
     struct GolfBall
     {
-        GolfBall();
         float radius = 0.05;
         glm::vec3 position = glm::vec3(0);
         glm::quat orientation = glm::identity<glm::quat>();
@@ -27,14 +26,14 @@ namespace Game
         const float camOffsetY = 1.0f;
         const float cameraSmoothFactor = 10.0f;
 
-        float hitpower = 5;
+        float hitpower = 5.0f;
 
-        float energyLoss = 0.3;
+        float energyRetention = 0.85f;
 
-        float rotationZ = 0;
-        float rotXSmooth = 0;
-        float rotYSmooth = 0;
-        float rotZSmooth = 0;
+        float rotationZ = 0.0f;
+        float rotXSmooth = 0.0f;
+        float rotYSmooth = 0.0f;
+        float rotZSmooth = 0.0f;
 
         Render::ModelId model;
 
