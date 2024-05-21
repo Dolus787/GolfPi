@@ -27,7 +27,7 @@ struct MapTile
     int nrOfWalls = 0;
     float rotation = 0;
     bool manualRot = false;
-    //the char the tile is in the map string
+    //the char of the tile in the map string
     char tileType ='0';
     MapTile() = default;
     MapTile(char tileChar);
@@ -36,7 +36,7 @@ struct MapTile
     //Set adjacent tiles to this tile
     void SetAdjacents(GolfMap map, int tile);
     //Set rotation depending on surrounding tiles or manual set rotation
-    float SetRotation();
+    float SetRotation(std::string map);
 };
 struct MapManager
 {

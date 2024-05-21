@@ -20,6 +20,8 @@
 #include <string>
 #include "GolfMap.h"
 
+#define PI 3.1415926535f
+
 MapTile::MapTile(char tileChar) : tileType(tileChar)
 {
 	if (tileChar == 'O')
@@ -55,10 +57,16 @@ size_t MapTile::SetTileType()
 }
 void MapTile::SetAdjacents(GolfMap map, int tileLoc)
 {
+	//THESE ARE WRONG GOTTA MAKE SURE ITS ALWAYS ON THE SAME LINE AND NOT CHECKING THE NEXT LINE ON THE MAP
+	//THESE ARE WRONG GOTTA MAKE SURE ITS ALWAYS ON THE SAME LINE AND NOT CHECKING THE NEXT LINE ON THE MAP
+	//THESE ARE WRONG GOTTA MAKE SURE ITS ALWAYS ON THE SAME LINE AND NOT CHECKING THE NEXT LINE ON THE MAP
+	//THESE ARE WRONG GOTTA MAKE SURE ITS ALWAYS ON THE SAME LINE AND NOT CHECKING THE NEXT LINE ON THE MAP
+	//THESE ARE WRONG GOTTA MAKE SURE ITS ALWAYS ON THE SAME LINE AND NOT CHECKING THE NEXT LINE ON THE MAP
+	//THESE ARE WRONG GOTTA MAKE SURE ITS ALWAYS ON THE SAME LINE AND NOT CHECKING THE NEXT LINE ON THE MAP
 		int aboveTile = tileLoc - map.width, belowTile = tileLoc + map.width, rightTile = tileLoc + 1, leftTile = tileLoc - 1;
 		adjacentTilesLoc = { aboveTile, belowTile, rightTile, leftTile };
 }
-float MapTile::SetRotation()
+float MapTile::SetRotation(std::string map)
 {
 	if (!manualRot)
 	{
@@ -68,17 +76,59 @@ float MapTile::SetRotation()
 		}
 		else
 		{
-			int emptyTilesFound = 0;
+			std::cout << "start of setRot" << std::endl;
+			//above, below, right, left
+			std::vector<bool> emptyTilesFoundList = {false, false, false, false};
 			for (int i = 0; i < adjacentTilesLoc.size(); i++)
 			{
-				/*if (adjacentTilesLoc[i] == '0' && emptyTilesFound < nrOfWalls)
+				if (adjacentTilesLoc[i] >= 0 && adjacentTilesLoc[i] < map.length())
 				{
-					emptyTilesFound++;
-				}*/
+					if (map[adjacentTilesLoc[i]] == '0')
+					{
+						emptyTilesFoundList[i] = true;
+					}
+					continue;
+				}
+				emptyTilesFoundList[i] = true;
 			}
+			if (tileType == 'C')
+			{
+				if (emptyTilesFoundList[0] == true && emptyTilesFoundList[2] == true)
+				{
+					std::cout << "here" << std::endl;
+					rotation += 180;
+				}
+				else if (emptyTilesFoundList[0] == true && emptyTilesFoundList[3] == true)
+				{
+					std::cout << "here" << std::endl;
+					rotation += 270;
+				}
+				else if (emptyTilesFoundList[1] == true && emptyTilesFoundList[2] == true)
+				{
+					std::cout << "here" << std::endl;
+					rotation += 90;
+				}
+				else if (emptyTilesFoundList[1] == true && emptyTilesFoundList[3] == true)
+				{
+					std::cout << "here" << std::endl;
+					rotation += 0;
+				}
+			}
+			if (tileType == '2')
+			{
+				if (emptyTilesFoundList[0] || emptyTilesFoundList[1])
+				{
+					return 0;
+				}
+				else
+				{
+					rotation += 90;
+				}
+			}
+			return ( rotation * PI / 180);
 		}
 	}
-	return 0;
+	return 0.0f;
 }
 
 GolfMap::GolfMap(std::string newMap, glm::vec3 mapSpawn, int mapWidth, std::string manualRotation) :
@@ -123,6 +173,7 @@ void MapManager::SpawnMaps()
             if (maps[mapCount].map[i] != '0')
             {
 				MapTile tile = MapTile(maps[mapCount].map[i]);
+				tile.SetAdjacents(maps[mapCount], i);
 				size_t resourceIndex = tile.SetTileType();
 				tile.model = models[resourceIndex];
 				//float span = 20.0f;
@@ -134,7 +185,7 @@ void MapManager::SpawnMaps()
 					(i % maps[mapCount].width) +1
 				);
 				glm::vec3 rotationAxis = glm::vec3(0,1,0);
-				tile.rotation = tile.SetRotation();
+				tile.rotation = tile.SetRotation(maps[mapCount].map);
 				glm::mat4 transform = glm::translate(translation) * glm::rotate(tile.rotation, rotationAxis);
 				tile.collider = Physics::CreateCollider(colliderMeshes[resourceIndex], transform);
 				tile.transform = transform;
