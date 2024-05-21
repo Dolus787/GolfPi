@@ -1,5 +1,4 @@
 #pragma once
-using namespace Render;
 
 struct GolfMap;
  enum TileType
@@ -11,9 +10,10 @@ struct GolfMap;
      threewalls,
      open,
      windmill,
-     nothing
+     goal,
+     flag
  };
-std::string tileStringTypes = "CH123OW0";
+const std::string tileStringTypes = "CH123OWG";
 struct MapTile
 {
     //std::tuple<Render::ModelId, Physics::ColliderId, glm::mat4> tile;
@@ -21,40 +21,30 @@ struct MapTile
     Render::ModelId model = Render::ModelId();
     Physics::ColliderId collider = Physics::ColliderId();
     glm::mat4 transform = glm::mat4();
-    //bool manualRot;
+    float rotation = 0;
+    bool manualRot = false;
     MapTile() = default;
     //Set what model the tile sohuld have
-    size_t SetTileType(char tileChar)
-    {
-        for (int i = 0; i < tileStringTypes.size(); i++)
-        {
-            if (tileChar == tileStringTypes[i] && tileChar != '0')
-            {
-                return i;
-            }
-            else if (tileChar == '0')
-            {
-                
-            }
-        }
-    }
+    size_t SetTileType(char tileChar);
+    //Set rotation depending on surrounding tiles or manual set rotation
+    float SetRotation(GolfMap map, int tile);
 };
 struct MapManager
 {
     //List of all maps
     std::vector<GolfMap> maps;
     int selectedMap = 0;
-    ModelId models[9] =
+    Render::ModelId models[9] =
     {
-        LoadModel("assets/golf/GLB/corner.glb"),
-        LoadModel("assets/golf/GLB/castle.glb"),
-        LoadModel("assets/golf/GLB/side.glb"),
-        LoadModel("assets/golf/GLB/straight.glb"),
-        LoadModel("assets/golf/GLB/end.glb"),
-        LoadModel("assets/golf/GLB/open.glb"),
-        LoadModel("assets/golf/GLB/windmill.glb"),
-        LoadModel("assets/golf/GLB/club-red.glb"),
-        LoadModel("assets/golf/GLB/flag-red.glb")
+        Render::LoadModel("assets/golf/GLB/corner.glb"),
+        Render::LoadModel("assets/golf/GLB/castle.glb"),
+        Render::LoadModel("assets/golf/GLB/side.glb"),
+        Render::LoadModel("assets/golf/GLB/straight.glb"),
+        Render::LoadModel("assets/golf/GLB/end.glb"),
+        Render::LoadModel("assets/golf/GLB/open.glb"),
+        Render::LoadModel("assets/golf/GLB/windmill.glb"),
+        Render::LoadModel("assets/golf/GLB/flag-red.glb"),
+        Render::LoadModel("assets/golf/GLB/club-red.glb")
     };
     Physics::ColliderMeshId colliderMeshes[9] = 
     {
@@ -65,8 +55,8 @@ struct MapManager
 		Physics::LoadColliderMesh("assets/golf/GLB/end.glb"),
 		Physics::LoadColliderMesh("assets/golf/GLB/open.glb"),
 		Physics::LoadColliderMesh("assets/golf/GLB/windmill.glb"),
-		Physics::LoadColliderMesh("assets/golf/GLB/club-red.glb"),
 		Physics::LoadColliderMesh("assets/golf/GLB/flag-red.glb"),
+		Physics::LoadColliderMesh("assets/golf/GLB/club-red.glb")
     };
     std::vector<MapTile> tiles;
     MapManager() = default;
@@ -79,63 +69,15 @@ struct MapManager
 //------------------------------------------------------------------------------
 /**
 * Struct containing all the necessities for the golf maps, the map is a string
-* Usage: GolfMap()
+* Usage: GolfMap(string map, vec3 spawn point, vec3 goal location, int map width)
 */
 struct GolfMap
 {
 	std::string map = "CCCC";
     glm::vec3 spawnPos = {0,1,0};
-    glm::vec3 goalPos = {2,1,2};
+    glm::vec3 goalPos = {2,2,1};
 	int goalPosInt = 3;
 	int width = 2;
 	GolfMap() = default;
-	GolfMap(std::string newMap, glm::vec3 mapSpawn, glm::vec3 mapGoal, int mapWidth, std::string manualRotation = "") :
-		map(newMap), spawnPos(mapSpawn), goalPos(mapGoal), width(mapWidth)
-    {
-        goalPosInt = mapGoal.x + (mapGoal.y * mapWidth);
-        std::cout << "spawn: " << spawnPos.length() << " goal: " << goalPosInt << std::endl;
-        if (manualRotation != "")
-        {
-
-        }
-    }
+    GolfMap(std::string newMap, glm::vec3 mapSpawn, glm::vec3 mapGoal, int mapWidth, std::string manualRotation = "");
 };
-//Distance between the maps in the x coordinate
-const int mapOffset = 80;
-void MapManager::SpawnMaps()
-{
-    for (int mapCount = 0; mapCount < maps.size(); mapCount++)
-    {
-        maps[mapCount].goalPos.x += mapOffset * mapCount;
-        maps[mapCount].spawnPos.x += mapOffset * mapCount;
-		for (int i = 0; i < maps[mapCount].map.size(); i++)
-		{
-			if (i == maps[mapCount].goalPosInt)
-			{
-				MapTile goalFlag = MapTile();
-			}
-			MapTile tile = MapTile();
-			size_t resourceIndex = tile.SetTileType(maps[mapCount].map[i]);
-			tile.model = models[resourceIndex];
-			float span = 20.0f;
-			glm::vec3 translation = glm::vec3(
-				// iterate the map's width
-				(int)(i / maps[mapCount].width) + mapOffset * mapCount,
-				0, 
-				// iterate every step reset at the map's width
-				(i % maps[mapCount].width) + 1
-			);
-			glm::vec3 rotationAxis = normalize(translation);
-			float rotation = 0;
-			glm::mat4 transform = glm::rotate(rotation, rotationAxis) * glm::translate(translation);
-			tile.collider = Physics::CreateCollider(colliderMeshes[resourceIndex], glm::translate(glm::vec3(0,0,0)));
-			tile.transform = transform;
-			tiles.push_back(tile);
-		}
-    }
-}
-void MapManager::LoadMap()
-{
-
-}
-
