@@ -4,12 +4,13 @@
 //------------------------------------------------------------------------------
 #include "config.h"
 #include "gamepad.h"
-#include <vector>
-#include <functional>
-#include <utility>
 namespace Input
 {
-
+    Gamepad::Gamepad() {
+        for (int i = 0; i !=__LAST__; i++) {
+            buttonstates.push_back(buttonState());
+        }
+    }
     void Gamepad::Update() {
         const float* axisTemp = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axisCount);
         const unsigned char* buttonsTemp = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttonCount);
@@ -21,68 +22,28 @@ namespace Input
         for (int i = 0; i < buttonCount; i++) {
             buttons[i] = buttonsTemp[i];
             if (buttons[i] == GLFW_PRESS) {
-                //Add new buttons here and header
-                if (i == 7) {
-                    startPressed = true;
-                    startReleased = false;
+                if (buttonstates[i].justPressed || buttonstates[i].held) {
+                    buttonstates[i].held = true;
+                    buttonstates[i].justPressed = false;
                 }
-                if (i == 6) {
-                    backPressed = true;
-                    backReleased = false;
+                else {
+                    buttonstates[i].justPressed = true;
                 }
-                if (i == 0) {
-                    aPressed = true;
-                    aReleased = false;
-                }
-                if (i == 3) {
-                    yPressed = true;
-                    yReleased = false;
-                }
+                buttonstates[i].justReleased = false, buttonstates[i].released = false;
             }
             else if (buttons[i] == GLFW_RELEASE) {
-                //Released only true for one frame
-                if (i == 7) {
-                    if (startPressed) {
-                        startReleased = true;
-                        startPressed = false;
-                    }
-                    else {
-                        startReleased = false;
-                    }
+                if (buttonstates[i].justReleased || buttonstates[i].released) {
+                    buttonstates[i].released = true;
+                    buttonstates[i].justReleased = false;
                 }
-
-                if (i == 6) {
-                    if (backPressed) {
-                        backReleased = true;
-                        backPressed = false;
-                    }
-                    else {
-                        backReleased = false;
-                    }
+                else {
+                    buttonstates[i].justReleased = true;
                 }
-
-                if (i == 0) {
-                    if (aPressed) {
-                        aReleased = true;
-                        aPressed = false;
-                    }
-                    else {
-                        aReleased = false;
-                    }
-                }
-                if (i == 3) {
-                    if (yPressed) {
-                        yReleased = true;
-                        yPressed = false;
-                    }
-                    else {
-                        yReleased = false;
-                    }
-                }
+                buttonstates[i].justPressed = false, buttonstates[i].held = false;
             }
         }
     }
-    
+   
     float Gamepad::GetLeftJoystickX() {
         if (axisCount == 0){ 
             std::cout << "NO CONTROLLER \n";
