@@ -3,17 +3,50 @@
 #include <GLFW/glfw3.h>
 #include "vec2.hpp"
 #include <iostream>
+#include <vector>
 namespace Input
 {
+    enum button {
+        // Don't remove last, add ahead of it.
+        a,
+        b,
+        x,
+        y,
+        leftShoulder,
+        rightShoulder,
+        back,
+        start,
+        leftStick,
+        rightStick,
+        up,
+        right,
+        down,
+        left,
+        __LAST__
+    };
+
+    struct buttonState {
+        buttonState(){
+            justPressed = false, held = false, justReleased = false, released = true;
+        }
+        bool justPressed, held, justReleased, released;
+    };
 
     struct Gamepad
     {
+        Gamepad();
+        
+
+        std::vector<buttonState> buttonstates;
+
         float axis[6];
         unsigned char buttons[14];
 
         int axisCount = 0;
         int buttonCount = 0;
         void Update();
+        
+        buttonState GetButtonState(button button) {return buttonstates[button];}
 
         float GetLeftJoystickX();
         float GetLeftJoystickY();
@@ -21,19 +54,8 @@ namespace Input
         float GetRightJoystickY();
         float GetRightTrigger();
         float GetLeftTrigger();
-
-        bool startPressed = false;
-        bool startReleased = false;
-        
-        bool backPressed = false;
-        bool backReleased = false;
-
-        bool aPressed = false;
-        bool aReleased = false;
- 
-        bool yPressed = false;
-        bool yReleased = false;
     };
+
 
 }
 
