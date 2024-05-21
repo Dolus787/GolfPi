@@ -14,67 +14,35 @@ namespace Game
 {
     GolfBall::GolfBall()
     {
-        uint32_t numParticles = 2048;
-        this->particleEmitterLeft = new ParticleEmitter(numParticles);
-        this->particleEmitterLeft->data = {
-            .origin = glm::vec4(this->position + (vec3(this->transform[2]) * emitterOffset),1),
-            .dir = glm::vec4(glm::vec3(-this->transform[2]), 0),
-            .startColor = glm::vec4(0.38f, 0.76f, 0.95f, 1.0f) * 2.0f,
-            .endColor = glm::vec4(0,0,0,1.0f),
-            .numParticles = numParticles,
-            .theta = glm::radians(0.0f),
-            .startSpeed = 1.2f,
-            .endSpeed = 0.0f,
-            .startScale = 0.025f,
-            .endScale = 0.0f,
-            .decayTime = 2.58f,
-            .randomTimeOffsetDist = 2.58f,
-            .looping = 1,
-            .emitterType = 1,
-            .discRadius = 0.020f
-        };
-        this->particleEmitterRight = new ParticleEmitter(numParticles);
-        this->particleEmitterRight->data = this->particleEmitterLeft->data;
 
-        ParticleSystem::Instance()->AddEmitter(this->particleEmitterLeft);
-        ParticleSystem::Instance()->AddEmitter(this->particleEmitterRight);
     }
 
     void
         GolfBall::Update(float dt)
     {
-        Mouse* mouse = Input::GetDefaultMouse();
-        Keyboard* kbd = Input::GetDefaultKeyboard();
-
         Camera* cam = CameraManager::GetCamera(CAMERA_MAIN);
 
-        this->currentSpeed = mix(this->currentSpeed, this->boostSpeed*Gamepad->GetLeftJoystickY(), std::min(1.0f, dt * 30.0f));
+        PhysicsUpdate(dt);
+
+        // Hit ball
+        if (Gamepad->GetButtonState(a).justPressed) {
+            vec3 desiredVelocity = vec3(0, 0, this->hitpower);
+            linearVelocity = this->transform * vec4(desiredVelocity, 0.0f);
+        }
 
 
-        vec3 desiredVelocity = vec3(0, 0, this->currentSpeed);
-        desiredVelocity = this->transform * vec4(desiredVelocity, 0.0f);
-
-        this->linearVelocity = mix(this->linearVelocity, desiredVelocity, dt * accelerationFactor);
 
         float rotX = -Gamepad->GetLeftJoystickX();
-        float rotY = -Gamepad->GetRightJoystickY();
-        float rotZ = Gamepad->GetRightJoystickX();
-        this->position += this->linearVelocity * dt * 10.0f;
 
         const float rotationSpeed = 1.8f * dt;
         
         rotXSmooth = mix(rotXSmooth, rotX * rotationSpeed, dt * cameraSmoothFactor);
-        rotYSmooth = mix(rotYSmooth, rotY * rotationSpeed, dt * cameraSmoothFactor);
-        rotZSmooth = mix(rotZSmooth, rotZ * rotationSpeed, dt * cameraSmoothFactor);
 
         quat localOrientation = quat(vec3(-rotYSmooth, rotXSmooth, rotZSmooth));
         this->orientation = this->orientation * localOrientation;
-        this->rotationZ -= rotXSmooth;
-        this->rotationZ = clamp(this->rotationZ, -45.0f, 45.0f);
         
         mat4 T = translate(this->position) * (mat4)this->orientation;
         this->transform = T * (mat4)quat(vec3(0, 0, rotationZ));
-        this->rotationZ = mix(this->rotationZ, 0.0f, dt * cameraSmoothFactor);
 
         // update camera view transform
         vec3 desiredCamPos = this->position + vec3(this->transform * vec4(0, camOffsetY, -4.0f, 0));
@@ -82,27 +50,58 @@ namespace Game
         cam->view = lookAt(this->camPos, this->camPos + vec3(this->transform[2]), vec3(this->transform[1]));
     }
 
-    bool
-        GolfBall::CheckCollisions()
+    void
+        GolfBall::PhysicsUpdate(float dt)
     {
-        glm::mat4 rotation = (glm::mat4)orientation;
-        bool hit = false;
-        for (int i = 0; i < 8; i++)
-        {
-            glm::vec3 pos = position;
-            glm::vec3 dir = rotation * glm::vec4(glm::normalize(colliderEndPoints[i]), 0.0f);
-            float len = glm::length(colliderEndPoints[i]);
-            Physics::RaycastPayload payload = Physics::Raycast(position, dir, len);
+        Physics::RaycastPayload payload;
+        glm::vec3 dir;
+        float len;
+        // Cool shit
+        dir = (glm::normalize(linearVelocity));
+        len = linearVelocity.length() * dt;
+        
+        Physics::RaycastPayload lastPayload;
+        glm::vec3 futurePos = dir * len;
+        glm::vec3 startLine = position + glm::normalize(linearVelocity) * radius;
+        
+        payload = Physics::Raycast(position, dir, len);
+        
+        unsigned int hitCounter=0;
+        
+        
+        while (payload.hit) {
 
-            // debug draw collision rays
-            // Debug::DrawLine(pos, pos + dir * len, 1.0f, glm::vec4(0, 1, 0, 1), glm::vec4(0, 1, 0, 1), Debug::RenderMode::AlwaysOnTop);
+            hitCounter++;
 
-            if (payload.hit)
-            {
-                Debug::DrawDebugText("HIT", payload.hitPoint, glm::vec4(1, 1, 1, 1));
-                hit = true;
-            }
+            len = (((len - (payload.hitDistance)) * energyLoss) + radius);
+            dir = glm::normalize(glm::reflect(dir, glm::normalize(glm::normalize(lastPayload.hitNormal) * radius)));
+            
+            lastPayload = payload;
+
+            payload = Physics::Raycast(payload.hitPoint, dir, len);
         }
-        return hit;
+        if (hitCounter!=0) {
+            
+            this->linearVelocity = glm::reflect((this->linearVelocity), glm::normalize(lastPayload.hitNormal)) * (float)(glm::pow(energyLoss, hitCounter));
+
+            this->position = lastPayload.hitPoint + (glm::normalize(lastPayload.hitNormal)*radius);
+            //this->position = lastPayload.hitPoint + (dir*len) + (glm::normalize(lastPayload.hitNormal)*radius);
+        }
+        else {
+            this->linearVelocity = mix(this->linearVelocity, vec3(0, 0, 0), dt * friction);
+            this->position += this->linearVelocity * dt;
+        }
+        
+        dir = vec3(0,-1,0);
+        len = 1.0;
+        
+        //Debug::DrawLine(position, position + dir*len, 2.0, vec4(0,1,0,0), vec4(0, 1, 0, 0));
+        payload = Physics::Raycast(position, dir, len);
+        if (payload.hit) {
+            position = payload.hitPoint + vec3(0, radius, 0);
+        }
+
+
+        return;
     }
 }

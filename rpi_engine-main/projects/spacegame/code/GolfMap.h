@@ -125,7 +125,7 @@ void MapManager::SpawnMaps()
 			glm::vec3 rotationAxis = normalize(translation);
 			float rotation = 0;
 			glm::mat4 transform = glm::rotate(rotation, rotationAxis) * glm::translate(translation);
-			tile.collider = Physics::CreateCollider(colliderMeshes[resourceIndex], glm::translate(glm::vec3(0,0,0)));
+			tile.collider = Physics::CreateCollider(colliderMeshes[resourceIndex], transform);
 			tile.transform = transform;
 			tiles.push_back(tile);
 		}

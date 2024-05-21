@@ -14,7 +14,7 @@ namespace Game
     struct GolfBall
     {
         GolfBall();
-
+        float radius = 0.05;
         glm::vec3 position = glm::vec3(0);
         glm::quat orientation = glm::identity<glm::quat>();
         glm::vec3 camPos = glm::vec3(0, 1.0f, -2.0f);
@@ -23,11 +23,13 @@ namespace Game
 
         const float normalSpeed = 1.0f;
         const float boostSpeed = normalSpeed * 2.0f;
-        const float accelerationFactor = 1.0f;
+        const float friction = 1.0f;
         const float camOffsetY = 1.0f;
         const float cameraSmoothFactor = 10.0f;
 
-        float currentSpeed = 0.0f;
+        float hitpower = 5;
+
+        float energyLoss = 0.3;
 
         float rotationZ = 0;
         float rotXSmooth = 0;
@@ -35,26 +37,13 @@ namespace Game
         float rotZSmooth = 0;
 
         Render::ModelId model;
-        Render::ParticleEmitter* particleEmitterLeft;
-        Render::ParticleEmitter* particleEmitterRight;
-        float emitterOffset = -0.5f;
 
         Input::Gamepad *Gamepad;
 
         void Update(float dt);
 
-        bool CheckCollisions();
+        void PhysicsUpdate(float dt);
 
-        const glm::vec3 colliderEndPoints[8] = {
-            glm::vec3(-1.10657, -0.480347, -0.346542),  // right wing
-            glm::vec3(1.10657, -0.480347, -0.346542),  // left wing
-            glm::vec3(-0.342382, 0.25109, -0.010299),   // right top
-            glm::vec3(0.342382, 0.25109, -0.010299),   // left top
-            glm::vec3(-0.285614, -0.10917, 0.869609), // right front
-            glm::vec3(0.285614, -0.10917, 0.869609), // left front
-            glm::vec3(-0.279064, -0.10917, -0.98846),   // right back
-            glm::vec3(0.279064, -0.10917, -0.98846)   // right back
-        };
     };
 
 }

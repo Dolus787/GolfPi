@@ -51,18 +51,18 @@ SpaceShip::Update(float dt)
     if (kbd->held[Key::W])
     {
         if (kbd->held[Key::Shift])
-            this->currentSpeed = mix(this->currentSpeed, this->boostSpeed, std::min(1.0f, dt * 30.0f));
+            this->hitpower = mix(this->hitpower, this->boostSpeed, std::min(1.0f, dt * 30.0f));
         else
-            this->currentSpeed = mix(this->currentSpeed, this->normalSpeed, std::min(1.0f, dt * 90.0f));
+            this->hitpower = mix(this->hitpower, this->normalSpeed, std::min(1.0f, dt * 90.0f));
     }
     else
     {
-        this->currentSpeed = 0;
+        this->hitpower = 0;
     }
-    vec3 desiredVelocity = vec3(0, 0, this->currentSpeed);
+    vec3 desiredVelocity = vec3(0, 0, this->hitpower);
     desiredVelocity = this->transform * vec4(desiredVelocity, 0.0f);
 
-    this->linearVelocity = mix(this->linearVelocity, desiredVelocity, dt * accelerationFactor);
+    this->linearVelocity = mix(this->linearVelocity, desiredVelocity, dt * friction);
 
     float rotX = kbd->held[Key::Left] ? 1.0f : kbd->held[Key::Right] ? -1.0f : 0.0f;
     float rotY = kbd->held[Key::Up] ? -1.0f : kbd->held[Key::Down] ? 1.0f : 0.0f;
@@ -93,7 +93,7 @@ SpaceShip::Update(float dt)
     this->particleEmitterRight->data.origin = glm::vec4(vec3(this->position + (vec3(this->transform[0]) * thrusterPosOffset)) + (vec3(this->transform[2]) * emitterOffset), 1);
     this->particleEmitterRight->data.dir = glm::vec4(glm::vec3(-this->transform[2]), 0);
     
-    float t = (currentSpeed / this->normalSpeed);
+    float t = (hitpower / this->normalSpeed);
     this->particleEmitterLeft->data.startSpeed = 1.2 + (3.0f * t);
     this->particleEmitterLeft->data.endSpeed = 0.0f  + (3.0f * t);
     this->particleEmitterRight->data.startSpeed = 1.2 + (3.0f * t);
@@ -103,7 +103,7 @@ SpaceShip::Update(float dt)
 }
 
 bool
-SpaceShip::CheckCollisions()
+SpaceShip::physicsUpdate()
 {
     glm::mat4 rotation = (glm::mat4)orientation;
     bool hit = false;
