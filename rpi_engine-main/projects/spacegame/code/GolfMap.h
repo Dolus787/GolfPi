@@ -9,11 +9,11 @@ struct GolfMap;
      straight,
      threewalls,
      open,
-     windmill,
      goal,
      flag
  };
-const std::string tileStringTypes = "CH123OWG";
+ //the different types of tiles that exist in a map string
+const std::string tileStringTypes = "CH123OGF";
 struct MapTile
 {
     //std::tuple<Render::ModelId, Physics::ColliderId, glm::mat4> tile;
@@ -21,13 +21,21 @@ struct MapTile
     Render::ModelId model = Render::ModelId();
     Physics::ColliderId collider = Physics::ColliderId();
     glm::mat4 transform = glm::mat4();
+	std::vector<int> adjacentTilesLoc;
+    //The amount of walls the tile has
+    int nrOfWalls = 0;
     float rotation = 0;
     bool manualRot = false;
+    //the char the tile is in the map string
+    char tileType ='0';
     MapTile() = default;
+    MapTile(char tileChar);
     //Set what model the tile sohuld have
-    size_t SetTileType(char tileChar);
+    size_t SetTileType();
+    //Set adjacent tiles to this tile
+    void SetAdjacents(GolfMap map, int tile);
     //Set rotation depending on surrounding tiles or manual set rotation
-    float SetRotation(GolfMap map, int tile);
+    float SetRotation();
 };
 struct MapManager
 {
@@ -42,7 +50,7 @@ struct MapManager
         Render::LoadModel("assets/golf/GLB/straight.glb"),
         Render::LoadModel("assets/golf/GLB/end.glb"),
         Render::LoadModel("assets/golf/GLB/open.glb"),
-        Render::LoadModel("assets/golf/GLB/windmill.glb"),
+        Render::LoadModel("assets/golf/GLB/hole-square.glb"),
         Render::LoadModel("assets/golf/GLB/flag-red.glb"),
         Render::LoadModel("assets/golf/GLB/club-red.glb")
     };
@@ -54,7 +62,7 @@ struct MapManager
 		Physics::LoadColliderMesh("assets/golf/GLB/straight.glb"),
 		Physics::LoadColliderMesh("assets/golf/GLB/end.glb"),
 		Physics::LoadColliderMesh("assets/golf/GLB/open.glb"),
-		Physics::LoadColliderMesh("assets/golf/GLB/windmill.glb"),
+		Physics::LoadColliderMesh("assets/golf/GLB/hole-square.glb"),
 		Physics::LoadColliderMesh("assets/golf/GLB/flag-red.glb"),
 		Physics::LoadColliderMesh("assets/golf/GLB/club-red.glb")
     };
@@ -75,9 +83,9 @@ struct GolfMap
 {
 	std::string map = "CCCC";
     glm::vec3 spawnPos = {0,1,0};
-    glm::vec3 goalPos = {2,2,1};
+    glm::vec3 goalPos = {2,2,0};
 	int goalPosInt = 3;
 	int width = 2;
 	GolfMap() = default;
-    GolfMap(std::string newMap, glm::vec3 mapSpawn, glm::vec3 mapGoal, int mapWidth, std::string manualRotation = "");
+    GolfMap(std::string newMap, glm::vec3 mapSpawn, int mapWidth, std::string manualRotation = "");
 };

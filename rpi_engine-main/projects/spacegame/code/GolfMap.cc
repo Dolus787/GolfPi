@@ -20,35 +20,74 @@
 #include <string>
 #include "GolfMap.h"
 
-size_t MapTile::SetTileType(char tileChar)
+MapTile::MapTile(char tileChar) : tileType(tileChar)
+{
+	if (tileChar == 'O')
+	{
+		return;
+	}
+	else if (tileChar == '1')
+	{
+		nrOfWalls = 1;
+	}
+	else if (tileChar == 'C' || tileChar == '2' || tileChar == 'H')
+	{
+		nrOfWalls = 2;
+	}
+	else if (tileChar == '3' || tileChar == 'G')
+	{
+		nrOfWalls = 3;
+	}
+}
+
+size_t MapTile::SetTileType()
 {
 	for (int i = 0; i < tileStringTypes.size(); i++)
 	{
-		if (tileChar == tileStringTypes[i])
+		if (tileType == tileStringTypes[i])
 		{
 			return i;
 		}
-		/*else
-		{
-			std::cout
-			return "[NO MODEL FOUND FOR TILE]"
-		}*/
 	}
+	std::cout << "[NO MODEL FOUND FOR TILE]" << std::endl;
+	//9 is out of range for the models list
+	return 9;
 }
-float MapTile::SetRotation(GolfMap map, int tileLoc)
+void MapTile::SetAdjacents(GolfMap map, int tileLoc)
+{
+		int aboveTile = tileLoc - map.width, belowTile = tileLoc + map.width, rightTile = tileLoc + 1, leftTile = tileLoc - 1;
+		adjacentTilesLoc = { aboveTile, belowTile, rightTile, leftTile };
+}
+float MapTile::SetRotation()
 {
 	if (!manualRot)
 	{
-		int aboveTile = tileLoc - map.width, belowTile = tileLoc + map.width, rightTile = tileLoc + 1, leftTile;
+		if (tileType == 'O')
+		{
+			return 0;
+		}
+		else
+		{
+			int emptyTilesFound = 0;
+			for (int i = 0; i < adjacentTiles.size(); i++)
+			{
+				if (adjacentTiles[i] == '0' && emptyTilesFound < nrOfWalls)
+				{
+					emptyTilesFound++;
+				}
+			}
+		}
 	}
 	return 0;
 }
 
-GolfMap::GolfMap(std::string newMap, glm::vec3 mapSpawn, glm::vec3 mapGoal, int mapWidth, std::string manualRotation) :
-map(newMap), spawnPos(mapSpawn), goalPos(mapGoal), width(mapWidth)
+GolfMap::GolfMap(std::string newMap, glm::vec3 mapSpawn, int mapWidth, std::string manualRotation) :
+map(newMap), spawnPos(mapSpawn), width(mapWidth)
 {
-	goalPosInt = mapGoal.x + (mapGoal.y * mapWidth);
-	std::cout << "spawn: " << spawnPos.length() << " goal: " << goalPosInt << std::endl;
+	goalPosInt = map.find('G');
+	goalPos = glm::vec3(goalPosInt % width, goalPosInt / width, 0);
+
+	std::cout << "spawn: " << spawnPos.x << " " << spawnPos.y << " goal: " << goalPos.x << " " << goalPos.y << std::endl;
 	if (manualRotation != "")
 	{
 
@@ -65,27 +104,26 @@ void MapManager::SpawnMaps()
         maps[mapCount].spawnPos.x += mapOffset * mapCount;
 		for (int i = 0; i < maps[mapCount].map.size(); i++)
 		{
-			if (i == maps[mapCount].goalPosInt)
+			if (maps[mapCount].map[i] == 'G')
 			{
-				MapTile goalFlag = MapTile();
+				MapTile goalFlag = MapTile('F');
 				goalFlag.model = models[flag];
 				glm::vec3 translation = glm::vec3
 				(
 					(int)(i / maps[mapCount].width) + mapOffset * mapCount,
-					1,
-					(i % maps[mapCount].width) + 1
+					0,
+					(i % maps[mapCount].width) + 1 
 				);
 				glm::vec3 rotationAxis = normalize(translation);
-				float rotation = 0;
-				glm::mat4 transform = glm::translate(translation) * glm::rotate(rotation, rotationAxis);
+				glm::mat4 transform = glm::translate(translation) * glm::rotate(goalFlag.rotation, rotationAxis);
 				goalFlag.collider = Physics::CreateCollider(colliderMeshes[flag], transform);
 				goalFlag.transform = transform;
 				tiles.push_back(goalFlag);
 			}
             if (maps[mapCount].map[i] != '0')
             {
-				MapTile tile = MapTile();
-				size_t resourceIndex = tile.SetTileType(maps[mapCount].map[i]);
+				MapTile tile = MapTile(maps[mapCount].map[i]);
+				size_t resourceIndex = tile.SetTileType();
 				tile.model = models[resourceIndex];
 				//float span = 20.0f;
 				glm::vec3 translation = glm::vec3(
@@ -93,10 +131,10 @@ void MapManager::SpawnMaps()
 					(int)(i / maps[mapCount].width) + mapOffset * mapCount,
 					0, 
 					// iterate every step reset at the map's width
-					(i % maps[mapCount].width)
+					(i % maps[mapCount].width) +1
 				);
 				glm::vec3 rotationAxis = glm::vec3(0,1,0);
-				tile.rotation = tile.SetRotation(maps[mapCount], i);
+				tile.rotation = tile.SetRotation();
 				glm::mat4 transform = glm::translate(translation) * glm::rotate(tile.rotation, rotationAxis);
 				tile.collider = Physics::CreateCollider(colliderMeshes[resourceIndex], transform);
 				tile.transform = transform;

@@ -86,7 +86,7 @@ void
 SpaceGameApp::Run()
 {
     MapManager* manager = new MapManager();
-    manager->maps = { GolfMap("C2H11122C200C1C00212C00C111131211OO12000H0C1C200020000C22212C00000000W00000000G00", { 4,1,0 }, { 6,8,0 }, 9), GolfMap()};
+    manager->maps = { GolfMap("C2H11122C200C1C00212C00C111131211OO12000H0C1C200020000C22212C00000000H00000000G00", { 4,1,0 }, 9), GolfMap()};
     int w;
     int h;
     this->window->GetSize(w, h);
