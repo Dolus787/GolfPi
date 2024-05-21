@@ -5,14 +5,12 @@
 #include "config.h"
 #include "gamepad.h"
 #include <vector>
+#include <functional>
+#include <utility>
 namespace Input
 {
-    void Gamepad::Update() {
 
-        for (int i = 0; i < buttonCount; i++) {
-            buttons[i] = 0;
-        }
-        
+    void Gamepad::Update() {
         const float* axisTemp = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axisCount);
         const unsigned char* buttonsTemp = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttonCount);
 
@@ -23,11 +21,6 @@ namespace Input
         for (int i = 0; i < buttonCount; i++) {
             buttons[i] = buttonsTemp[i];
             if (buttons[i] == GLFW_PRESS) {
-                /// TAKE NOTE ARON THIS IS PROBABLY CHEAPER // Tage
-				// std::vector<bool> buttonPressed[14];
-				// std::vector<bool> buttonReleased[14];
-                // buttonPressed[i] = true;
-                // buttonReleased[i] = false;
                 //Add new buttons here and header
                 if (i == 7) {
                     startPressed = true;
@@ -51,40 +44,40 @@ namespace Input
                 if (i == 7) {
                     if (startPressed) {
                         startReleased = true;
+                        startPressed = false;
                     }
                     else {
                         startReleased = false;
                     }
-                    startPressed = false;
                 }
 
-                if (i == 6 && backPressed) {
+                if (i == 6) {
                     if (backPressed) {
                         backReleased = true;
+                        backPressed = false;
                     }
                     else {
                         backReleased = false;
                     }
-                    backPressed = false;
                 }
 
-                if (i == 0 && aPressed) {
+                if (i == 0) {
                     if (aPressed) {
                         aReleased = true;
+                        aPressed = false;
                     }
                     else {
                         aReleased = false;
                     }
-                    aPressed = false;
                 }
-                if (i == 3 && yPressed) {
+                if (i == 3) {
                     if (yPressed) {
                         yReleased = true;
+                        yPressed = false;
                     }
                     else {
                         yReleased = false;
                     }
-                    yPressed = false;
                 }
             }
         }
