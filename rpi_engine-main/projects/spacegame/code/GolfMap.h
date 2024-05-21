@@ -18,27 +18,30 @@ struct MapTile
 {
     //std::tuple<Render::ModelId, Physics::ColliderId, glm::mat4> tile;
     //TileType type;
-    Render::ModelId model;
-    Physics::ColliderId collider;
-    glm::mat4 transform;
+    Render::ModelId model = Render::ModelId();
+    Physics::ColliderId collider = Physics::ColliderId();
+    glm::mat4 transform = glm::mat4();
     //bool manualRot;
-    MapTile()
-    {
-
-    }
+    MapTile() = default;
+    //Set what model the tile sohuld have
     size_t SetTileType(char tileChar)
     {
         for (int i = 0; i < tileStringTypes.size(); i++)
         {
-            if (tileChar == tileStringTypes[i])
+            if (tileChar == tileStringTypes[i] && tileChar != '0')
             {
                 return i;
+            }
+            else if (tileChar == '0')
+            {
+                
             }
         }
     }
 };
 struct MapManager
 {
+    //List of all maps
     std::vector<GolfMap> maps;
     int selectedMap = 0;
     ModelId models[9] =
