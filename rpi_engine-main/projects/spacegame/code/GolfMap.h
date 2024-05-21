@@ -2,17 +2,18 @@
 using namespace Render;
 
 struct GolfMap;
-enum TileType
-{
-    corner, 
-    castle,
-    onewall,
-    straight,
-    threewalls,
-    open,
-    windmill,
-    nothing
-};
+// enum TileType
+// {
+    // corner, 
+    // castle,
+    // onewall,
+    // straight,
+    // threewalls,
+    // open,
+    // windmill,
+    // nothing
+// };
+std::string tileStringTypes = "CH123OW0";
 struct MapTile
 {
     //std::tuple<Render::ModelId, Physics::ColliderId, glm::mat4> tile;
@@ -20,16 +21,22 @@ struct MapTile
     Render::ModelId model;
     Physics::ColliderId collider;
     glm::mat4 transform;
-    bool manualRot;
-    void SetTileType()
+    //bool manualRot;
+    size_t SetTileType(char tileChar)
     {
-        
+        for (int i = 0; i < tileStringTypes.size(); i++)
+        {
+            if (tileChar == tileStringTypes[i])
+            {
+                return i;
+            }
+        }
     }
 };
 struct MapManager
 {
     std::vector<GolfMap> maps;
-    int selectedMap = 1;
+    int selectedMap = 0;
     ModelId models[9] =
     {
         LoadModel("assets/golf/GLB/corner.glb"),
@@ -84,8 +91,8 @@ void LoadMap(MapManager* manager)
     for (int i = 0; i < manager->maps[manager->selectedMap].map.size(); i++)
     {
         
-        size_t resourceIndex = (size_t)(0);
         MapTile tile;
+        size_t resourceIndex = tile.SetTileType(manager->maps[manager->selectedMap].map[i]);
         tile.model = manager->models[resourceIndex];
         float span = 20.0f;
         glm::vec3 translation = glm::vec3(
