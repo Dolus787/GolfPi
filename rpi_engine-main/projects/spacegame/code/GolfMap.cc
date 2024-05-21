@@ -69,12 +69,12 @@ float MapTile::SetRotation()
 		else
 		{
 			int emptyTilesFound = 0;
-			for (int i = 0; i < adjacentTiles.size(); i++)
+			for (int i = 0; i < adjacentTilesLoc.size(); i++)
 			{
-				if (adjacentTiles[i] == '0' && emptyTilesFound < nrOfWalls)
+				/*if (adjacentTilesLoc[i] == '0' && emptyTilesFound < nrOfWalls)
 				{
 					emptyTilesFound++;
-				}
+				}*/
 			}
 		}
 	}
