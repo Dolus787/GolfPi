@@ -43,9 +43,7 @@ namespace Input
             }
         }
     }
-    
-    buttonState Gamepad::GetButtonState(button button) { return buttonstates[button];}
-
+   
     float Gamepad::GetLeftJoystickX() {
         if (axisCount == 0){ 
             std::cout << "NO CONTROLLER \n";

@@ -16,6 +16,7 @@
 #include "render/debugrender.h"
 #include "core/random.h"
 #include "render/input/inputserver.h"
+#include "render/input/gamepad.h"
 #include "core/cvar.h"
 #include "render/physics.h"
 #include <chrono>
@@ -234,7 +235,7 @@ SpaceGameApp::Run()
         auto timeEnd = std::chrono::steady_clock::now();
         dt = std::min(0.04, std::chrono::duration<double>(timeEnd - timeStart).count());
 
-        if (kbd->pressed[Input::Key::Code::Escape]||Gamepad.startPressed)
+        if (kbd->pressed[Input::Key::Code::Escape]||Gamepad.GetButtonState(Input::button::start).justPressed)
             this->Exit();
 	}
 }
