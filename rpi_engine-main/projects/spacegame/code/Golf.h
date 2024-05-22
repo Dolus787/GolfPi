@@ -22,11 +22,16 @@ namespace Game
 
         const float normalSpeed = 1.0f;
         const float boostSpeed = normalSpeed * 2.0f;
-        const float friction = 1.0f;
         const float camOffsetY = 1.0f;
         const float cameraSmoothFactor = 10.0f;
 
         float hitpower = 5.0f;
+
+        const float friction = 0.8f;
+        
+        const float slowLimit = 0.02f;
+
+        bool ballStill = false;
 
         float energyRetention = 0.85f;
 
@@ -36,6 +41,8 @@ namespace Game
         float rotZSmooth = 0.0f;
 
         Render::ModelId model;
+
+        float groundLevel=0.0f;
 
         Input::Gamepad *Gamepad;
 

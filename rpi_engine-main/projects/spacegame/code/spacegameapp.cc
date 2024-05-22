@@ -86,7 +86,7 @@ void
 SpaceGameApp::Run()
 {
     MapManager* manager = new MapManager();
-    manager->maps = { GolfMap("c2H11122c200C1C00220000000211C00C111131211OO12000H0C1C200020000C22212C00000000H00000000G00", { 4,1,0 }, 9), GolfMap("00G000C2C0G2O2G0C2C000G00", {0,0,0},5), GolfMap() };
+    manager->maps = { GolfMap("c2H11122c200C1C00220000000211C00C111131211OO12000H0C1C200020000C22212C00000000H00000000G00", { 1,1,5 }, 9), GolfMap("00G000C2C0G2O2G0C2C000G00", {0,0,0},5), GolfMap() };
     int w;
     int h;
     this->window->GetSize(w, h);
@@ -94,6 +94,7 @@ SpaceGameApp::Run()
     Camera* cam = CameraManager::GetCamera(CAMERA_MAIN);
     cam->projection = projection;
     manager->SpawnMaps();
+
     // Setup asteroids near
     // // load all resources
     //ModelId models[6] = {
