@@ -124,7 +124,7 @@ float MapTile::SetRotation(GolfMap map, int tileLoc)
 			}
 			else if (tileChar == 'C' || tileChar == 'c')
 			{
-				std::cout << tileLoc << " start of setRot 'C' list: " << emptyTilesFoundList[0] << emptyTilesFoundList[1] << emptyTilesFoundList[2] << emptyTilesFoundList[3] << std::endl;
+				//std::cout << tileLoc << " start of setRot 'C' list: " << emptyTilesFoundList[0] << emptyTilesFoundList[1] << emptyTilesFoundList[2] << emptyTilesFoundList[3] << std::endl;
 				if (emptyTilesFoundList[0] == true && emptyTilesFoundList[3] == true)
 				{
 					// std::cout << "here1" << std::endl;
