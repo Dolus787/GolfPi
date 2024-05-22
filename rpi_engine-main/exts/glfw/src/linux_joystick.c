@@ -95,7 +95,7 @@ static GLFWbool openJoystickDevice(const char* path)
 
     ioctl(fd, JSIOCGAXES, &axisCount);
     js->axisCount = (int) axisCount;
-    js->axes = calloc(axisCount, sizeof(float));
+    js->axis = calloc(axisCount, sizeof(float));
 
     ioctl(fd, JSIOCGBUTTONS, &buttonCount);
     js->buttonCount = (int) buttonCount;
@@ -127,7 +127,7 @@ static GLFWbool pollJoystickEvents(_GLFWjoystickLinux* js)
             // Reset the joystick slot if the device was disconnected
             if (errno == ENODEV)
             {
-                free(js->axes);
+                free(js->axis);
                 free(js->buttons);
                 free(js->name);
                 free(js->path);
@@ -145,7 +145,7 @@ static GLFWbool pollJoystickEvents(_GLFWjoystickLinux* js)
         e.type &= ~JS_EVENT_INIT;
 
         if (e.type == JS_EVENT_AXIS)
-            js->axes[e.number] = (float) e.value / 32767.0f;
+            js->axis[e.number] = (float) e.value / 32767.0f;
         else if (e.type == JS_EVENT_BUTTON)
             js->buttons[e.number] = e.value ? GLFW_PRESS : GLFW_RELEASE;
     }
@@ -255,7 +255,7 @@ void _glfwTerminateJoysticksLinux(void)
         if (_glfw.linux_js.js[i].present)
         {
             close(_glfw.linux_js.js[i].fd);
-            free(_glfw.linux_js.js[i].axes);
+            free(_glfw.linux_js.js[i].axis);
             free(_glfw.linux_js.js[i].buttons);
             free(_glfw.linux_js.js[i].name);
             free(_glfw.linux_js.js[i].path);
@@ -317,7 +317,7 @@ const float* _glfwPlatformGetJoystickAxes(int joy, int* count)
         return NULL;
 
     *count = js->axisCount;
-    return js->axes;
+    return js->axis;
 }
 
 const unsigned char* _glfwPlatformGetJoystickButtons(int joy, int* count)

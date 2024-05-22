@@ -17,14 +17,26 @@ namespace Game
     void
         GolfBall::Update(float dt)
     {
+
+        /*
+        TODO:
+
+        Controls need implementation, charge up etc.
+
+        Check collision with goal.
+
+        */
+
+
+
         Camera* cam = CameraManager::GetCamera(CAMERA_MAIN);
 
         PhysicsUpdate(dt);
 
         // Hit ball
         if (Gamepad->GetButtonState(a).justPressed) {
-            vec3 desiredVelocity = vec3(0, 0, this->hitpower);
-            linearVelocity = this->transform * vec4(desiredVelocity, 0.0f);
+            vec3 desiredVelocity = vec3(0, 0, hitpower);
+            linearVelocity = transform * vec4(desiredVelocity, 0.0f);
         }
 
         //Rotate ball smoothly
@@ -35,15 +47,15 @@ namespace Game
         rotXSmooth = mix(rotXSmooth, rotX * rotationSpeed, dt * cameraSmoothFactor);
 
         quat localOrientation = quat(vec3(-rotYSmooth, rotXSmooth, rotZSmooth));
-        this->orientation = this->orientation * localOrientation;
+        orientation = orientation * localOrientation;
         
-        mat4 T = translate(this->position) * (mat4)this->orientation;
-        this->transform = T * (mat4)quat(vec3(0, 0, rotationZ));
+        mat4 T = translate(position) * (mat4)orientation;
+        transform = T * (mat4)quat(vec3(0, 0, rotationZ));
 
         // update camera view transform
-        vec3 desiredCamPos = this->position + vec3(this->transform * vec4(0, camOffsetY, -4.0f, 0));
-        this->camPos = mix(this->camPos, desiredCamPos, dt * cameraSmoothFactor);
-        cam->view = lookAt(this->camPos, this->camPos + vec3(this->transform[2]), vec3(this->transform[1]));
+        vec3 desiredCamPos = position + vec3(transform * vec4(0, camOffsetY, -4.0f, 0));
+        camPos = mix(camPos, desiredCamPos, dt * cameraSmoothFactor);
+        cam->view = lookAt(camPos, camPos + vec3(transform[2]), vec3(transform[1]));
     }
 
     void
@@ -52,60 +64,72 @@ namespace Game
         /*
         TODO:
 
-        Friction not taken into account during collision check, low framerate will cause less friction than usual.
-        Friction as a whole might need to be changed to make this implementation easier.
         */
-
-
+        
+        
+        // NORMALS NOT NORMILIZED, DOES NOT WORK UNLESS NORMILIZED
 
         Physics::RaycastPayload payload;
 
         glm::vec3 dir = (glm::normalize(linearVelocity));
-        float len = linearVelocity.length()* dt + radius;        
+        float len = (glm::length(linearVelocity)* dt);
+
         
         // Keep last payload with collision to calculate where the ball ended up after collision.
         Physics::RaycastPayload lastPayload;
         
-        payload = Physics::Raycast(position + glm::normalize(linearVelocity) * radius, dir, len);
+        payload = Physics::Raycast(position, dir, len);
         
         // To calculate remaining velocity after collision.
         unsigned int hitCounter=0;
         
-        
-        while (payload.hit && len>0) {
+        while (payload.hit && hitCounter<4) {
 
             hitCounter++;
-
-            len = (((len - (payload.hitDistance)) * energyRetention));
-            dir = glm::normalize(glm::reflect(dir, glm::normalize(lastPayload.hitNormal) * radius));
-            // NORMALS NOT NORMILIZED, DOES NOT WORK UNLESS NORMILIZED
+            len = ((len - (payload.hitDistance)) * energyRetention)-(payload.hitDistance*friction);
+            dir = glm::reflect(dir, glm::normalize(lastPayload.hitNormal));
             lastPayload = payload;
 
-            payload = Physics::Raycast(payload.hitPoint+ (glm::normalize(lastPayload.hitNormal) * radius), dir, len);
+            payload = Physics::Raycast(payload.hitPoint, dir, len);
         }
 
         if (hitCounter!=0) {
             // Remaining velocity after collision.
-            this->linearVelocity = glm::reflect((this->linearVelocity), glm::normalize(lastPayload.hitNormal)) * (float)(glm::pow(energyRetention, hitCounter));
-
+            linearVelocity = glm::reflect((linearVelocity), glm::normalize(lastPayload.hitNormal)) * (float)(glm::pow(energyRetention, hitCounter));
+            
             // Calculate where the ball ended up after collision(s).
-            this->position = lastPayload.hitPoint + (dir*len) + (glm::normalize(-lastPayload.hitNormal)*radius);
+            position = lastPayload.hitPoint + (dir*len);
         }
         else {
             // Ordinary movement without collision, friction added
-            this->linearVelocity = mix(this->linearVelocity, vec3(0, 0, 0), dt * friction);
-            this->position += this->linearVelocity * dt;
+            position += linearVelocity * dt;
+        }
+
+        if (glm::length(linearVelocity) < slowLimit) {
+            // Sets actual velocity to zero when close enough.
+            linearVelocity = vec3(0, 0, 0);
+            ballStill = true;
+        }
+        else {
+            // Friction.
+            float frictionLoss((glm::length(linearVelocity) - ((dt * glm::length(linearVelocity)) * friction))/ glm::length(linearVelocity));
+            linearVelocity = (linearVelocity * frictionLoss);
+            ballStill = false;
         }
         
-
-        // Move ball to ground.
-        dir = vec3(0,-1,0);
-        len = 1.0;
+        if (groundLevel==0) {
+            // Move ball to ground.
+            dir = vec3(0,-1,0);
+            len = 1.0;
         
-        //Debug::DrawLine(position, position + dir*len, 2.0, vec4(0,1,0,0), vec4(0, 1, 0, 0));
-        payload = Physics::Raycast(position, dir, len);
-        if (payload.hit) {
-            position = payload.hitPoint + vec3(0, radius, 0);
+            //Debug::DrawLine(position, position + dir*len, 2.0, vec4(0,1,0,0), vec4(0, 1, 0, 0));
+            payload = Physics::Raycast(position, dir, len);
+            if (payload.hit) {
+                groundLevel = payload.hitPoint.y + radius;
+            }
+        }
+        else {
+            position.y = groundLevel;
         }
 
 
