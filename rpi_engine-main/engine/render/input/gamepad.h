@@ -40,8 +40,8 @@ namespace Input
 
         std::vector<buttonState> buttonstates;
 
-        float axis[6];
-        unsigned char buttons[14];
+        float axis[6]{ {0} };
+        unsigned char buttons[14]{ {0} };
 
         int axisCount = 0;
         int buttonCount = 0;
