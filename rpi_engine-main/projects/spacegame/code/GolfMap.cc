@@ -22,7 +22,7 @@
 
 #define PI 3.1415926535f
 
-MapTile::MapTile(char tileChar) : tileType(tileChar)
+MapTile::MapTile(char tileChar) : tileChar(tileChar)
 {
 	if (tileChar == 'O')
 	{
@@ -46,7 +46,7 @@ size_t MapTile::SetTileType()
 {
 	for (int i = 0; i < tileStringTypes.size(); i++)
 	{
-		if (tileType == tileStringTypes[i])
+		if (tileChar == tileStringTypes[i])
 		{
 			return i;
 		}
@@ -55,74 +55,114 @@ size_t MapTile::SetTileType()
 	//9 is out of range for the models list
 	return 9;
 }
-void MapTile::SetAdjacents(GolfMap map, int tileLoc)
+float MapTile::SetRotation(GolfMap map, int tileLoc)
 {
-	//THESE ARE WRONG GOTTA MAKE SURE ITS ALWAYS ON THE SAME LINE AND NOT CHECKING THE NEXT LINE ON THE MAP
-	//THESE ARE WRONG GOTTA MAKE SURE ITS ALWAYS ON THE SAME LINE AND NOT CHECKING THE NEXT LINE ON THE MAP
-	//THESE ARE WRONG GOTTA MAKE SURE ITS ALWAYS ON THE SAME LINE AND NOT CHECKING THE NEXT LINE ON THE MAP
-	//THESE ARE WRONG GOTTA MAKE SURE ITS ALWAYS ON THE SAME LINE AND NOT CHECKING THE NEXT LINE ON THE MAP
-	//THESE ARE WRONG GOTTA MAKE SURE ITS ALWAYS ON THE SAME LINE AND NOT CHECKING THE NEXT LINE ON THE MAP
-	//THESE ARE WRONG GOTTA MAKE SURE ITS ALWAYS ON THE SAME LINE AND NOT CHECKING THE NEXT LINE ON THE MAP
-		int aboveTile = tileLoc - map.width, belowTile = tileLoc + map.width, rightTile = tileLoc + 1, leftTile = tileLoc - 1;
-		adjacentTilesLoc = { aboveTile, belowTile, rightTile, leftTile };
-}
-float MapTile::SetRotation(std::string map)
-{
+	
 	if (!manualRot)
 	{
-		if (tileType == 'O')
+		if (tileChar == 'O')
 		{
 			return 0;
 		}
 		else
 		{
-			std::cout << "start of setRot" << std::endl;
-			//above, below, right, left
+			//order: above, below, left, right
 			std::vector<bool> emptyTilesFoundList = {false, false, false, false};
-			for (int i = 0; i < adjacentTilesLoc.size(); i++)
+			int aboveTile = tileLoc - map.width, belowTile = tileLoc + map.width, leftTile = tileLoc - 1, rightTile = tileLoc + 1;
+			if (aboveTile < 0 || map.map[aboveTile] == '0')
 			{
-				if (adjacentTilesLoc[i] >= 0 && adjacentTilesLoc[i] < map.length())
-				{
-					if (map[adjacentTilesLoc[i]] == '0')
-					{
-						emptyTilesFoundList[i] = true;
-					}
-					continue;
-				}
-				emptyTilesFoundList[i] = true;
+				// std::cout << "above: " << aboveTile << std::endl;
+				emptyTilesFoundList[0] = true;
 			}
-			if (tileType == 'C')
+			if (belowTile >= map.map.length() || map.map[belowTile] == '0')
 			{
-				if (emptyTilesFoundList[0] == true && emptyTilesFoundList[2] == true)
-				{
-					std::cout << "here" << std::endl;
-					rotation += 180;
-				}
-				else if (emptyTilesFoundList[0] == true && emptyTilesFoundList[3] == true)
-				{
-					std::cout << "here" << std::endl;
-					rotation += 270;
-				}
-				else if (emptyTilesFoundList[1] == true && emptyTilesFoundList[2] == true)
-				{
-					std::cout << "here" << std::endl;
-					rotation += 90;
-				}
-				else if (emptyTilesFoundList[1] == true && emptyTilesFoundList[3] == true)
-				{
-					std::cout << "here" << std::endl;
-					rotation += 0;
-				}
+				// std::cout << "below: " << belowTile << std::endl;
+				emptyTilesFoundList[1] = true;
 			}
-			if (tileType == '2')
+			if (leftTile / map.width != tileLoc / map.width || leftTile < 0 || map.map[leftTile] == '0')
 			{
-				if (emptyTilesFoundList[0] || emptyTilesFoundList[1])
+				 // std::cout << "left: " << leftTile << std::endl;
+				emptyTilesFoundList[2] = true;
+			}
+			if (rightTile / map.width != tileLoc / map.width || rightTile > map.map.length() || map.map[rightTile] == '0')
+			{
+				// std::cout << "right: " << rightTile << std::endl;
+				emptyTilesFoundList[3] = true;
+			}
+
+			//Commence magic number rotation
+
+			if (tileChar == '2' || tileChar == 'H')
+			{
+				if (emptyTilesFoundList[0] || emptyTilesFoundList[1] || map.map[leftTile] == 'G' || map.map[rightTile] == 'G')
 				{
 					return 0;
 				}
-				else
+				else if (emptyTilesFoundList[2] || emptyTilesFoundList[3] || map.map[aboveTile] == 'G' || map.map[belowTile] == 'G')
 				{
 					rotation += 90;
+				}
+			}
+			else if (tileChar == '1')
+			{
+				if (emptyTilesFoundList[0] == true)
+				{
+					rotation += 180;
+				}
+				else if (emptyTilesFoundList[1] == true)
+				{
+					rotation += 0;
+				}
+				else if (emptyTilesFoundList[2] == true)
+				{
+					rotation += 90;
+				}
+				else if (emptyTilesFoundList[3] == true)
+				{
+					rotation += 270;
+				}
+			}
+			else if (tileChar == 'C' || tileChar == 'c')
+			{
+				std::cout << tileLoc << " start of setRot 'C' list: " << emptyTilesFoundList[0] << emptyTilesFoundList[1] << emptyTilesFoundList[2] << emptyTilesFoundList[3] << std::endl;
+				if (emptyTilesFoundList[0] == true && emptyTilesFoundList[3] == true)
+				{
+					// std::cout << "here1" << std::endl;
+					rotation += 270;
+				}
+				else if (emptyTilesFoundList[0] == true && emptyTilesFoundList[2] == true)
+				{
+					// std::cout << "here2" << std::endl;
+					rotation += 180;
+				}
+				else if (emptyTilesFoundList[1] == true && emptyTilesFoundList[3] == true)
+				{
+					// std::cout << "here3" << std::endl;
+					rotation += 0;
+				}
+				else if (emptyTilesFoundList[1] == true && emptyTilesFoundList[2] == true)
+				{
+					// std::cout << "here4" << std::endl;
+					rotation += 90;
+				}
+			}
+			else if (tileChar == '3' || tileChar == 'G')
+			{
+				if (emptyTilesFoundList[2] == false)
+				{
+					rotation += 0;
+				}
+				else if (emptyTilesFoundList[0] == false)
+				{
+					rotation += 90;
+				}
+				else if (emptyTilesFoundList[1] == false)
+				{
+					rotation += 270;
+				}
+				else if (emptyTilesFoundList[3] == false)
+				{
+					rotation += 180;
 				}
 			}
 			return ( rotation * PI / 180);
@@ -140,12 +180,12 @@ map(newMap), spawnPos(mapSpawn), width(mapWidth)
 	std::cout << "spawn: " << spawnPos.x << " " << spawnPos.y << " goal: " << goalPos.x << " " << goalPos.y << std::endl;
 	if (manualRotation != "")
 	{
-
+		
 	}
 }
 
 //Distance between the maps in the x coordinate
-const int mapOffset = 80;
+const int mapOffset = 40;
 void MapManager::SpawnMaps()
 {
     for (int mapCount = 0; mapCount < maps.size(); mapCount++)
@@ -173,7 +213,7 @@ void MapManager::SpawnMaps()
             if (maps[mapCount].map[i] != '0')
             {
 				MapTile tile = MapTile(maps[mapCount].map[i]);
-				tile.SetAdjacents(maps[mapCount], i);
+				//tile.SetAdjacents(maps[mapCount], i);
 				size_t resourceIndex = tile.SetTileType();
 				tile.model = models[resourceIndex];
 				//float span = 20.0f;
@@ -185,7 +225,7 @@ void MapManager::SpawnMaps()
 					(i % maps[mapCount].width) +1
 				);
 				glm::vec3 rotationAxis = glm::vec3(0,1,0);
-				tile.rotation = tile.SetRotation(maps[mapCount].map);
+				tile.rotation = tile.SetRotation(maps[mapCount], i);
 				glm::mat4 transform = glm::translate(translation) * glm::rotate(tile.rotation, rotationAxis);
 				tile.collider = Physics::CreateCollider(colliderMeshes[resourceIndex], transform);
 				tile.transform = transform;

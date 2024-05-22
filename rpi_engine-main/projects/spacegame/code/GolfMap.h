@@ -2,19 +2,20 @@
 using namespace Render;
 
 struct GolfMap;
- enum TileType
- {
-     corner, 
-     castle,
-     onewall,
-     straight,
-     threewalls,
-     open,
-     goal,
-     flag
+enum TileType
+{
+    corner,
+	roundCorner,
+	castle,
+	onewall,
+	straight,
+	threewalls,
+	open,
+	goal,
+	flag
  };
  //the different types of tiles that exist in a map string
-const std::string tileStringTypes = "CH123OGF";
+const std::string tileStringTypes = "CcH123OGF";
 struct MapTile
 {
     //std::tuple<Render::ModelId, Physics::ColliderId, glm::mat4> tile;
@@ -22,30 +23,28 @@ struct MapTile
     Render::ModelId model = Render::ModelId();
     Physics::ColliderId collider = Physics::ColliderId();
     glm::mat4 transform = glm::mat4();
-	std::vector<int> adjacentTilesLoc;
     //The amount of walls the tile has
     int nrOfWalls = 0;
     float rotation = 0;
     bool manualRot = false;
     //the char of the tile in the map string
-    char tileType ='0';
+    char tileChar ='0';
     MapTile() = default;
     MapTile(char tileChar);
     //Set what model the tile sohuld have
     size_t SetTileType();
-    //Set adjacent tiles to this tile
-    void SetAdjacents(GolfMap map, int tile);
     //Set rotation depending on surrounding tiles or manual set rotation
-    float SetRotation(std::string map);
+    float SetRotation(GolfMap map, int tileLoc);
 };
 struct MapManager
 {
     //List of all maps
     std::vector<GolfMap> maps;
     int selectedMap = 0;
-    Render::ModelId models[9] =
+    Render::ModelId models[10] =
     {
         Render::LoadModel("assets/golf/GLB/corner.glb"),
+        Render::LoadModel("assets/golf/GLB/round-corner-a.glb"),
         Render::LoadModel("assets/golf/GLB/castle.glb"),
         Render::LoadModel("assets/golf/GLB/side.glb"),
         Render::LoadModel("assets/golf/GLB/straight.glb"),
@@ -55,9 +54,10 @@ struct MapManager
         Render::LoadModel("assets/golf/GLB/flag-red.glb"),
         Render::LoadModel("assets/golf/GLB/club-red.glb")
     };
-    Physics::ColliderMeshId colliderMeshes[9] = 
+    Physics::ColliderMeshId colliderMeshes[10] = 
     {
 		Physics::LoadColliderMesh("assets/golf/GLB/corner.glb"),
+		Physics::LoadColliderMesh("assets/golf/GLB/round-corner-a.glb"),
 		Physics::LoadColliderMesh("assets/golf/GLB/castle.glb"),
 		Physics::LoadColliderMesh("assets/golf/GLB/side.glb"),
 		Physics::LoadColliderMesh("assets/golf/GLB/straight.glb"),
@@ -82,11 +82,11 @@ struct MapManager
 */
 struct GolfMap
 {
-	std::string map = "CCCC";
-    glm::vec3 spawnPos = {0,1,0};
+	std::string map = "32C00H00G";
+    glm::vec3 spawnPos = {0,0,0};
     glm::vec3 goalPos = {2,2,0};
-	int goalPosInt = 3;
-	int width = 2;
+	int goalPosInt = 8;
+	int width = 3;
 	GolfMap() = default;
     GolfMap(std::string newMap, glm::vec3 mapSpawn, int mapWidth, std::string manualRotation = "");
 };
