@@ -34,9 +34,18 @@ namespace Game
         PhysicsUpdate(dt);
 
         // Hit ball
-        if (Gamepad->GetButtonState(a).justPressed) {
-            vec3 desiredVelocity = vec3(0, 0, hitpower);
-            linearVelocity = transform * vec4(desiredVelocity, 0.0f);
+        if (ballStill) {
+            if (Gamepad->GetButtonState(a).held && chargeTime < maxChargeTime) {
+                chargeTime += dt;
+                charging = true;
+            }
+            else if(charging){
+                vec3 desiredVelocity = vec3(0, 0, (chargeTime/maxChargeTime)*hitpower);
+                linearVelocity = transform * vec4(desiredVelocity, 0.0f);
+                charging = false;
+                chargeTime = 0.0f;
+            }
+
         }
 
         //Rotate ball smoothly
@@ -67,14 +76,15 @@ namespace Game
         */
         
         
-        // NORMALS NOT NORMILIZED, DOES NOT WORK UNLESS NORMILIZED
+        // NORMALS NOT NORMILIZED, DOES NOT WORK UNLESS NORMILIZED!
 
         Physics::RaycastPayload payload;
 
         glm::vec3 dir = (glm::normalize(linearVelocity));
+        dir = glm::normalize(dir * vec3(1, 0, 1));
         float len = (glm::length(linearVelocity)* dt);
 
-        
+
         // Keep last payload with collision to calculate where the ball ended up after collision.
         Physics::RaycastPayload lastPayload;
         
@@ -83,13 +93,11 @@ namespace Game
         // To calculate remaining velocity after collision.
         unsigned int hitCounter=0;
         
-        while (payload.hit && hitCounter<4) {
-
+        while (payload.hit) { 
             hitCounter++;
             len = ((len - (payload.hitDistance)) * energyRetention)-(payload.hitDistance*friction);
-            dir = glm::reflect(dir, glm::normalize(lastPayload.hitNormal));
+            dir = glm::normalize(glm::reflect(dir, glm::normalize(lastPayload.hitNormal))*vec3(1,0,1));
             lastPayload = payload;
-
             payload = Physics::Raycast(payload.hitPoint, dir, len);
         }
 
@@ -111,7 +119,7 @@ namespace Game
             ballStill = true;
         }
         else {
-            // Friction.
+            // Friction
             float frictionLoss((glm::length(linearVelocity) - ((dt * glm::length(linearVelocity)) * friction))/ glm::length(linearVelocity));
             linearVelocity = (linearVelocity * frictionLoss);
             ballStill = false;

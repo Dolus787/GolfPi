@@ -25,15 +25,21 @@ namespace Game
         const float camOffsetY = 1.0f;
         const float cameraSmoothFactor = 10.0f;
 
-        float hitpower = 5.0f;
 
         const float friction = 0.65f;
         
-        const float slowLimit = 0.02f;
+        const float slowLimit = 0.04f;
 
         bool ballStill = false;
 
-        float energyRetention = 0.9f;
+        bool charging = false; 
+
+        float hitpower = 10.0f;
+        float chargeTime = 0.0f;
+        float maxChargeTime = 1.0f;
+
+
+        float energyRetention = 0.85f;
 
         float rotationZ = 0.0f;
         float rotXSmooth = 0.0f;
