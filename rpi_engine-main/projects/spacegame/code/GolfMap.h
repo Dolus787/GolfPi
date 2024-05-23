@@ -5,6 +5,7 @@ struct GolfMap;
 enum TileType
 {
     corner,
+    innerCorner,
 	roundCorner,
 	castle,
 	onewall,
@@ -15,7 +16,7 @@ enum TileType
 	flag
  };
  //the different types of tiles that exist in a map string
-const std::string tileStringTypes = "CcH123OGF";
+const std::string tileStringTypes = "CIcH1Wlr23OGF";
 struct MapTile
 {
     //std::tuple<Render::ModelId, Physics::ColliderId, glm::mat4> tile;
@@ -24,9 +25,16 @@ struct MapTile
     Physics::ColliderId collider = Physics::ColliderId();
     glm::mat4 transform = glm::mat4();
     //The amount of walls the tile has
-    int nrOfWalls = 0;
     float rotation = 0;
     bool manualRot = false;
+    // list to help set rotations for corners
+    int cornerRotations[4][2] =
+    {
+        {true, true},
+        {true, false},
+        {false, true},
+        {false, false},
+    };
     //the char of the tile in the map string
     char tileChar ='0';
     MapTile() = default;
@@ -41,12 +49,19 @@ struct MapManager
     //List of all maps
     std::vector<GolfMap> maps;
     int selectedMap = 0;
-    Render::ModelId models[10] =
+    Render::ModelId models[14] =
     {
+        Render::LoadModel("assets/golf/GLB/square-corner-a.glb"),
         Render::LoadModel("assets/golf/GLB/corner.glb"),
         Render::LoadModel("assets/golf/GLB/round-corner-a.glb"),
         Render::LoadModel("assets/golf/GLB/castle.glb"),
         Render::LoadModel("assets/golf/GLB/side.glb"),
+        Render::LoadModel("assets/golf/GLB/side.glb"),
+        Render::LoadModel("assets/golf/GLB/side.glb"),
+        Render::LoadModel("assets/golf/GLB/side.glb"),
+       /* Render::LoadModel("assets/golf/GLB/walls-to-side.glb"),
+        Render::LoadModel("assets/golf/GLB/walls-to-side-r.glb"),
+        Render::LoadModel("assets/golf/GLB/walls-to-side-l.glb"),*/
         Render::LoadModel("assets/golf/GLB/straight.glb"),
         Render::LoadModel("assets/golf/GLB/end.glb"),
         Render::LoadModel("assets/golf/GLB/open.glb"),
@@ -54,12 +69,19 @@ struct MapManager
         Render::LoadModel("assets/golf/GLB/flag-red.glb"),
         Render::LoadModel("assets/golf/GLB/club-red.glb")
     };
-    Physics::ColliderMeshId colliderMeshes[10] = 
+    Physics::ColliderMeshId colliderMeshes[14] = 
     {
+		Physics::LoadColliderMesh("assets/golf/GLB/square-corner-a.glb"),
 		Physics::LoadColliderMesh("assets/golf/GLB/corner.glb"),
 		Physics::LoadColliderMesh("assets/golf/GLB/round-corner-a.glb"),
 		Physics::LoadColliderMesh("assets/golf/GLB/castle.glb"),
 		Physics::LoadColliderMesh("assets/golf/GLB/side.glb"),
+		Physics::LoadColliderMesh("assets/golf/GLB/side.glb"),
+		Physics::LoadColliderMesh("assets/golf/GLB/side.glb"),
+		Physics::LoadColliderMesh("assets/golf/GLB/side.glb"),
+		//Physics::LoadColliderMesh("assets/golf/GLB/walls-to-side.glb"),
+		//Physics::LoadColliderMesh("assets/golf/GLB/walls-to-side-r.glb"),
+		//Physics::LoadColliderMesh("assets/golf/GLB/walls-to-side-l.glb"),
 		Physics::LoadColliderMesh("assets/golf/GLB/straight.glb"),
 		Physics::LoadColliderMesh("assets/golf/GLB/end.glb"),
 		Physics::LoadColliderMesh("assets/golf/GLB/open.glb"),

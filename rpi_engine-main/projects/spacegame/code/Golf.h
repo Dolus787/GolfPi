@@ -27,13 +27,13 @@ namespace Game
 
         float hitpower = 5.0f;
 
-        const float friction = 0.8f;
+        const float friction = 0.65f;
         
         const float slowLimit = 0.02f;
 
         bool ballStill = false;
 
-        float energyRetention = 0.85f;
+        float energyRetention = 0.9f;
 
         float rotationZ = 0.0f;
         float rotXSmooth = 0.0f;

@@ -86,7 +86,7 @@ void
 SpaceGameApp::Run()
 {
     MapManager* manager = new MapManager();
-    manager->maps = { GolfMap("c2H11122c200C1C00220000000211C00C111131211OO12000H0C1C200020000C22212C00000000H00000000G00", { 1,1,5 }, 9), GolfMap("00G000C2C0G2O2G0C2C000G00", {0,0,0},5), GolfMap() };
+    manager->maps = { GolfMap("C2Hl1r22C200I1I002200000002r1I00I11ll3l2Wr11l2000H0002200020002C222W2W2C000000H00000000G00", { 1,1,5 }, 9), GolfMap("00G000C2C0G2O2G0C2C000G00", {0,0,0},5), GolfMap() };
     int w;
     int h;
     this->window->GetSize(w, h);
@@ -217,6 +217,7 @@ SpaceGameApp::Run()
             ShaderResource::ReloadShaders();
         }
         Gamepad.Update();
+        Physics::DebugDrawColliders();
         ball.Update(dt);
 
         // Store all drawcalls in the render device

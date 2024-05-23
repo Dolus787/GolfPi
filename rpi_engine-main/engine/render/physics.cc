@@ -638,5 +638,29 @@ Raycast(glm::vec3 start, glm::vec3 dir, float maxDistance, uint16_t mask)
 
     return ret;
 }
+void DebugDrawColliders()
+{
+    int numColliders = (int)colliders.active.size();
+    for (int colliderIndex = 0; colliderIndex < numColliders; colliderIndex++)
+    {
+        ColliderMesh const* const mesh = &meshes[colliders.meshes[colliderIndex].index];
+        glm::mat4 t = glm::inverse(colliders.invTransforms[colliderIndex]);
+        size_t numTris = mesh->tris.size();
+        for (size_t k = 0; k < numTris; k++)
+        {
+            auto const& tri = mesh->tris[k];
+            for (size_t v = 0; v < 3; v++)
+            {
+                Debug::DrawLine(t * glm::vec4(tri.vertices[v], 1), t * glm::vec4(tri.vertices[(v + 1) % 3], 1), 2.0f, {1,1,1,1}, {1,1,1,1});
+            }
 
+            glm::vec3 triCenter = t * glm::vec4((( tri.vertices[0] +tri.vertices[1] +tri.vertices[2]) / 3.0f), 1);
+            Debug::DrawLine(triCenter, triCenter + glm::normalize((glm::mat3(t) * -tri.normal)) * 0.2f, 3.0f, glm::vec4(1,0,0,1), glm::vec4(1,0,0,1));
+
+            auto centerPoint = glm::vec3(colliders.positionsAndScales[colliderIndex]);
+            auto radius = colliders.positionsAndScales[colliderIndex][3];
+            //Debug::DrawLine(centerPoint, centerPoint + glm::normalize(glm::vec3(0.5f, 0, 0.5f)) * radius, 3.0f, glm::vec4(1,0,0,1), glm::vec4(1,0,0,1));
+        }
+    }
+}
 } // namespace Physics

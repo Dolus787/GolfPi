@@ -99,5 +99,5 @@ void SetTransform(ColliderId collider, glm::mat4 const& transform);
 // temp
 void SetupBVH();
 void VisualizeBVH();
-
+void DebugDrawColliders();
 } // namespace Physics
