@@ -193,7 +193,7 @@ SpaceGameApp::Run()
     }
 
 
-    GolfBall ball;
+    //GolfBall ball;
     ball.model = LoadModel("assets/golf/GLB/ball-red.glb");
     ball.Gamepad = &Gamepad;
     ball.position = manager->maps[manager->selectedMap].spawnPos;
@@ -274,6 +274,7 @@ SpaceGameApp::RenderUI()
 void
 SpaceGameApp::RenderNanoVG(NVGcontext* vg)
 {
+    // Render UI
     nvgSave(vg);
 
     nvgBeginPath(vg);
@@ -282,8 +283,6 @@ SpaceGameApp::RenderNanoVG(NVGcontext* vg)
     paint = nvgLinearGradient(vg, 600, 100, 650, 150, nvgRGBA(255, 0, 0, 255), nvgRGBA(0, 255, 0, 255));
     nvgFillPaint(vg, paint);
     nvgFill(vg);
-
-
 
     // Header
     nvgBeginPath(vg);
@@ -294,13 +293,17 @@ SpaceGameApp::RenderNanoVG(NVGcontext* vg)
     nvgFontFace(vg, "sans");
     nvgFillColor(vg, nvgRGBA(255, 255, 255, 200));
 
+    int ballCharge_I = (int)((ball.chargeTime / ball.maxChargeTime) * 100);
+    std::string ballCharge_String = std::to_string(ballCharge_I).append("% charge");
+    const char* ballCharge_CString = ballCharge_String.c_str();
 
-    //const char* ballCharge[] = { std::to_string((ball.chargeTime / ball.maxChargeTime) * 100).c_str() };
-    int ballChargeF = (int)((ball.chargeTime / ball.maxChargeTime) * 100);
-    std::string str = std::to_string(ballChargeF).append("%");
-    const char* ballChargeS = str.c_str();
+    std::string hits_String = std::to_string(ball.hits).append(" hits");
+    const char* hits_CString = hits_String.c_str();
 
-    nvgText(vg, 0, 30, ballChargeS, NULL);
+
+
+    nvgText(vg, 0, 30, ballCharge_CString, NULL);
+    nvgText(vg, 0, 70, hits_CString, NULL);
 
     nvgRestore(vg);
 }

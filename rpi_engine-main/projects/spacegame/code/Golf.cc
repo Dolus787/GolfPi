@@ -42,6 +42,7 @@ namespace Game
             else if(charging){
                 vec3 desiredVelocity = vec3(0, 0, (chargeTime/maxChargeTime)*hitpower);
                 linearVelocity = transform * vec4(desiredVelocity, 0.0f);
+                hits++;
                 charging = false;
                 chargeTime = 0.0f;
             }
@@ -67,6 +68,8 @@ namespace Game
         cam->view = lookAt(camPos, camPos + vec3(transform[2]), vec3(transform[1]));
     }
 
+
+    //-----------------------------------------------------------------------------------------------------------------
     void
         GolfBall::PhysicsUpdate(float dt)
     {
@@ -101,17 +104,6 @@ namespace Game
             payload = Physics::Raycast(payload.hitPoint, dir, len);
         }
 
-        if (hitCounter!=0) {
-            // Remaining velocity after collision.
-            linearVelocity = glm::reflect((linearVelocity), glm::normalize(lastPayload.hitNormal)) * (float)(glm::pow(energyRetention, hitCounter));
-            
-            // Calculate where the ball ended up after collision(s).
-            position = lastPayload.hitPoint + (dir*len);
-        }
-        else {
-            // Ordinary movement without collision, friction added
-            position += linearVelocity * dt;
-        }
 
         if (glm::length(linearVelocity) < slowLimit) {
             // Sets actual velocity to zero when close enough.
@@ -123,6 +115,18 @@ namespace Game
             float frictionLoss((glm::length(linearVelocity) - ((dt * glm::length(linearVelocity)) * friction))/ glm::length(linearVelocity));
             linearVelocity = (linearVelocity * frictionLoss);
             ballStill = false;
+        }
+
+        if (hitCounter!=0) {
+            // Remaining velocity after collision.
+            linearVelocity = glm::reflect((linearVelocity), glm::normalize(lastPayload.hitNormal)) * (float)(glm::pow(energyRetention, hitCounter));
+            
+            // Calculate where the ball ended up after collision(s).
+            position = lastPayload.hitPoint + (dir*len);
+        }
+        else {
+            // Ordinary movement without collision, friction added
+            position += linearVelocity * dt;
         }
         
         if (groundLevel==0) {

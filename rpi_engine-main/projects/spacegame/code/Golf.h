@@ -38,6 +38,7 @@ namespace Game
         float chargeTime = 0.0f;
         float maxChargeTime = 1.0f;
 
+        unsigned int hits = 0;
 
         float energyRetention = 0.85f;
 
