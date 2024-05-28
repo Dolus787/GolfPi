@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 #include "core/app.h"
 #include "render/window.h"
+#include "Golf.h"
 
 namespace Game
 {
@@ -31,6 +32,7 @@ private:
 	void RenderUI();
 	/// render some nanovg stuff
 	void RenderNanoVG(NVGcontext* vg);
+	Game::GolfBall ball;
 
 	Display::Window* window;
 };

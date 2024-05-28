@@ -20,9 +20,10 @@
 #include "core/cvar.h"
 #include "render/physics.h"
 #include <chrono>
-#include "Golf.h"
 #include <string>
 #include "GolfMap.h"
+#include <Bits.h>
+#include <string>
 
 using namespace Display;
 using namespace Render;
@@ -68,10 +69,7 @@ SpaceGameApp::Open()
 		{
 			this->RenderUI();
 		});
-        this->window->SetNanoFunc([this](NVGcontext* vg)
-        {
-            this->RenderNanoVG(vg);
-        });
+
         
         return true;
 	}
@@ -176,6 +174,11 @@ SpaceGameApp::Run()
     // Setup lights
     for (int i = 0; i < numLights; i++)
     {
+        this->window->SetNanoFunc([this](NVGcontext* vg)
+        {
+            this->RenderNanoVG(vg);
+        });
+
         glm::vec3 translation = glm::vec3(
             Core::RandomFloatNTP() * 20.0f,
             Core::RandomFloatNTP() * 20.0f,
@@ -217,7 +220,7 @@ SpaceGameApp::Run()
             ShaderResource::ReloadShaders();
         }
         Gamepad.Update();
-        Physics::DebugDrawColliders();
+        //Physics::DebugDrawColliders();
         ball.Update(dt);
 
         // Store all drawcalls in the render device
@@ -287,10 +290,17 @@ SpaceGameApp::RenderNanoVG(NVGcontext* vg)
     nvgStrokeColor(vg, nvgRGBA(0, 0, 0, 32));
     nvgStroke(vg);
 
-    nvgFontSize(vg, 16.0f);
+    nvgFontSize(vg, 30.0f);
     nvgFontFace(vg, "sans");
-    nvgFillColor(vg, nvgRGBA(255, 255, 255, 128));
-    nvgText(vg, 0, 30, "Testing, testing... Everything seems to be in order.", NULL);
+    nvgFillColor(vg, nvgRGBA(255, 255, 255, 200));
+
+
+    //const char* ballCharge[] = { std::to_string((ball.chargeTime / ball.maxChargeTime) * 100).c_str() };
+    int ballChargeF = (int)((ball.chargeTime / ball.maxChargeTime) * 100);
+    std::string str = std::to_string(ballChargeF).append("%");
+    const char* ballChargeS = str.c_str();
+
+    nvgText(vg, 0, 30, ballChargeS, NULL);
 
     nvgRestore(vg);
 }
