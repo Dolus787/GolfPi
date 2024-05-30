@@ -64,12 +64,6 @@ SpaceGameApp::Open()
 
         RenderDevice::Init();
 
-		// set ui rendering function
-		this->window->SetUiRender([this]()
-		{
-			this->RenderUI();
-		});
-
         
         return true;
 	}
@@ -253,21 +247,6 @@ SpaceGameApp::Exit()
 {
     this->window->Close();
 }
-
-//------------------------------------------------------------------------------
-/**
-*/
-void
-SpaceGameApp::RenderUI()
-{
-	if (this->window->IsOpen())
-	{
-        
-
-        //Debug::DispatchDebugTextDrawing();
-	}
-}
-
 //------------------------------------------------------------------------------
 /**
 */
@@ -275,6 +254,7 @@ void
 SpaceGameApp::RenderNanoVG(NVGcontext* vg)
 {
     // Render UI
+
     nvgSave(vg);
 
     nvgBeginPath(vg);
@@ -300,10 +280,8 @@ SpaceGameApp::RenderNanoVG(NVGcontext* vg)
     std::string hits_String = std::to_string(ball.hits).append(" hits");
     const char* hits_CString = hits_String.c_str();
 
-
-
-    nvgText(vg, 0, 30, ballCharge_CString, NULL);
-    nvgText(vg, 0, 70, hits_CString, NULL);
+    nvgText(vg, 5, 30, ballCharge_CString, NULL);
+    nvgText(vg, 5, 70, hits_CString, NULL);
 
     nvgRestore(vg);
 }

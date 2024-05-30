@@ -21,8 +21,6 @@ namespace Game
         /*
         TODO:
 
-        Controls need implementation, charge up etc.
-
         Check collision with goal.
 
         */
@@ -40,7 +38,7 @@ namespace Game
                 charging = true;
             }
             else if(charging){
-                vec3 desiredVelocity = vec3(0, 0, (chargeTime/maxChargeTime)*hitpower);
+                vec3 desiredVelocity = vec3(0, 0, 1) * ((chargeTime / maxChargeTime)*hitpower);
                 linearVelocity = transform * vec4(desiredVelocity, 0.0f);
                 hits++;
                 charging = false;
@@ -51,6 +49,7 @@ namespace Game
 
         //Rotate ball smoothly
         float rotX = -Gamepad->GetLeftJoystickX();
+        float rotY = -glm::min(Gamepad->GetRightJoystickY(), 0.4f);
 
         const float rotationSpeed = 1.8f * dt;
         
@@ -63,9 +62,9 @@ namespace Game
         transform = T * (mat4)quat(vec3(0, 0, rotationZ));
 
         // update camera view transform
-        vec3 desiredCamPos = position + vec3(transform * vec4(0, camOffsetY, -4.0f, 0));
+        vec3 desiredCamPos = position + vec3(transform * vec4(0, camOffsetY+(2*rotY), -4.0f, 0));
         camPos = mix(camPos, desiredCamPos, dt * cameraSmoothFactor);
-        cam->view = lookAt(camPos, camPos + vec3(transform[2]), vec3(transform[1]));
+        cam->view = lookAt(camPos, position, vec3(transform[1]));
     }
 
 
@@ -79,7 +78,7 @@ namespace Game
         */
         
         
-        // NORMALS NOT NORMILIZED, DOES NOT WORK UNLESS NORMILIZED!
+        /// NORMALS NOT NORMILIZED, DOES NOT WORK UNLESS NORMILIZED!
 
         Physics::RaycastPayload payload;
 

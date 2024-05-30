@@ -28,8 +28,6 @@ public:
 	void Exit();
 private:
 
-	/// show some ui things
-	void RenderUI();
 	/// render some nanovg stuff
 	void RenderNanoVG(NVGcontext* vg);
 	Game::GolfBall ball;
