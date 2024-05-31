@@ -62,7 +62,7 @@ namespace Game
         transform = T * (mat4)quat(vec3(0, 0, rotationZ));
 
         // update camera view transform
-        vec3 desiredCamPos = position + vec3(transform * vec4(0, camOffsetY+(2*rotY), -4.0f, 0));
+        vec3 desiredCamPos = position + vec3(transform * vec4(0, camOffsetY+(2*rotY), -4.0f + glm::max((rotY * 3.5f), -2.0f), 0));
         camPos = mix(camPos, desiredCamPos, dt * cameraSmoothFactor);
         cam->view = lookAt(camPos, position, vec3(transform[1]));
     }
