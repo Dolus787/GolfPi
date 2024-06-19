@@ -135,6 +135,7 @@ SpaceGameApp::Run()
     ball.Gamepad = &Gamepad;
     ball.kbd = Input::GetDefaultKeyboard();
     ball.position = mapManager.maps[mapManager.selectedMap].spawnPos;
+    ball.spawnPos = &mapManager.maps[mapManager.selectedMap].spawnPos;
     ball.goalPos = &mapManager.maps[mapManager.selectedMap].goalPos;
 
     std::clock_t c_start = std::clock();
@@ -225,15 +226,23 @@ SpaceGameApp::RenderUI(NVGcontext* vg)
     nvgFontFace(vg, "sans");
     nvgFillColor(vg, nvgRGBA(255, 255, 255, 200));
 
-    int ballCharge_I = (int)((ball.chargeTime / ball.maxChargeTime) * 100);
-    std::string ballCharge_String = std::to_string(ballCharge_I).append("% charge");
-    const char* ballCharge_CString = ballCharge_String.c_str();
+    if (ball.state == Game::PlayState::InPlay) {
+        int ballCharge_I = (int)((ball.chargeTime / ball.maxChargeTime) * 100);
+        std::string ballCharge_String = std::to_string(ballCharge_I).append("% charge");
+        const char* ballCharge_CString = ballCharge_String.c_str();
 
-    std::string hits_String = std::to_string(ball.hits).append(" hits");
-    const char* hits_CString = hits_String.c_str();
+        std::string hits_String = std::to_string(ball.hits).append(" hits");
+        const char* hits_CString = hits_String.c_str();
+        nvgText(vg, 5, 30, ballCharge_CString, NULL);
+        nvgText(vg, 5, 70, hits_CString, NULL);
 
-    nvgText(vg, 5, 30, ballCharge_CString, NULL);
-    nvgText(vg, 5, 70, hits_CString, NULL);
+    }
+    else if (ball.state == Game::PlayState::NameSelect) {
+        const char* newName = ball.name;
+
+        nvgText(vg, 5, 30, newName, NULL);
+    }
+
 
     nvgRestore(vg);
 }

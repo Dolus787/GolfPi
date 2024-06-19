@@ -1,5 +1,6 @@
 #include "config.h"
 #include "Golf.h"
+#include <iostream>
 #include "render/cameramanager.h"
 #include "render/physics.h"
 #include "render/debugrender.h"
@@ -12,8 +13,6 @@ using namespace Render;
 
 namespace Game
 {
-
-
     void
         GolfBall::Update(float dt)
     {
@@ -21,11 +20,81 @@ namespace Game
         /*
         TODO:
 
-        Check collision with goal.
-
         */
+        if (state == PlayState::InPlay) {
+            UpdateInPlay(dt);
+        }
+        else if(state == PlayState::NameSelect){
+            UpdateNameSelect();
+        }
 
 
+    }
+    //-----------------------------------------------------------------------------------------------------------------
+    void
+        GolfBall::UpdateNameSelect()
+    {
+        //Gamepad control
+        /*if (Gamepad->GetButtonState(a).held && chargeTime < maxChargeTime) {
+            chargeTime += dt;
+            charging = true;
+        }
+        else if(charging){
+            vec3 desiredVelocity = vec3(0, 0, 1) * ((chargeTime / maxChargeTime)*hitpower);
+            linearVelocity = transform * vec4(desiredVelocity, 0.0f);
+            hits++;
+            charging = false;
+            chargeTime = 0.0f;
+        }*/
+
+        // Keyboard control for debug purposes.
+        if (kbd->pressed[Input::Key::Down]) {
+            name[charIndex]++;
+            if (name[charIndex] > 90) {
+                name[charIndex] = 65;
+            }
+        }
+        if (kbd->pressed[Input::Key::Up]) {
+            name[charIndex]--;
+            if (name[charIndex] < 65) {
+                name[charIndex] = 90;
+            }
+        }
+        if (kbd->pressed[Input::Key::Right]) {
+            charIndex++;
+            if (charIndex > 2) {
+                charIndex = 0;
+            }
+        }
+        if (kbd->pressed[Input::Key::Left]) {
+            charIndex--;
+            if (charIndex < 0) {
+                charIndex = 2;
+            }
+        }
+        if (kbd->pressed[Input::Key::RightShift]) {
+            state = PlayState::InPlay;
+
+            // Ugly, but it didnt let me do it in the pretty way
+            name[0] = 'A', name[1] = 'A', name[2] = 'A';
+
+            charIndex = 0;
+            linearVelocity = { 0,0,0 };
+
+            if (spawnPos != nullptr) {
+                position = *spawnPos;
+                hits = 0;
+            }
+            else {
+                std::cerr << "SPAWN POSITION NOT PASSED TO BALL";
+            }
+            
+        }
+    }
+    //-----------------------------------------------------------------------------------------------------------------
+    void
+        GolfBall::UpdateInPlay(float dt)
+    {
         Camera* cam = CameraManager::GetCamera(CAMERA_MAIN);
 
         PhysicsUpdate(dt);
@@ -33,7 +102,7 @@ namespace Game
         // Hit ball
         if (ballStill) {
 
-            //Gamepad control
+            // Gamepad control.
             /*if (Gamepad->GetButtonState(a).held && chargeTime < maxChargeTime) {
                 chargeTime += dt;
                 charging = true;
@@ -45,14 +114,14 @@ namespace Game
                 charging = false;
                 chargeTime = 0.0f;
             }*/
-            
-            //keyboard control for debug purposes
+
+            // Keyboard control for debug purposes.
             if (kbd->held[Input::Key::Space] && chargeTime < maxChargeTime) {
                 chargeTime += dt;
                 charging = true;
             }
-            else if(charging){
-                vec3 desiredVelocity = vec3(0, 0, 1) * ((chargeTime / maxChargeTime)*hitpower);
+            else if (charging) {
+                vec3 desiredVelocity = vec3(0, 0, 1) * ((chargeTime / maxChargeTime) * hitpower);
                 linearVelocity = transform * vec4(desiredVelocity, 0.0f);
                 hits++;
                 charging = false;
@@ -64,9 +133,9 @@ namespace Game
         // Rotate ball and camera (gamepad)
         //float rotX = -Gamepad->GetLeftJoystickX();
         //float rotY = -glm::min(Gamepad->GetRightJoystickY(), 0.4f);
-        
-        
-        float rotX= 0.0f, rotY=0.0f;
+
+
+        float rotX = 0.0f, rotY = 0.0f;
 
         // Rotate ball and camera (kbd)
         if (kbd->held[Input::Key::Left]) {
@@ -74,9 +143,8 @@ namespace Game
         }
         else if (kbd->held[Input::Key::Right]) {
             rotX -= 0.5f;
-
         }
-        
+
         if (kbd->held[Input::Key::Up]) {
             rotY += 1.0f;
         }
@@ -85,25 +153,23 @@ namespace Game
 
         }
 
-        
-        
+
+
         const float rotationSpeed = 1.8f * dt;
-        
+
         rotXSmooth = mix(rotXSmooth, rotX * rotationSpeed, dt * cameraSmoothFactor);
 
         quat localOrientation = quat(vec3(-rotYSmooth, rotXSmooth, rotZSmooth));
         orientation = orientation * localOrientation;
-        
+
         mat4 T = translate(position) * (mat4)orientation;
         transform = T * (mat4)quat(vec3(0, 0, rotationZ));
 
         // update camera view transform
-        vec3 desiredCamPos = position + vec3(transform * vec4(0, camOffsetY+(2*rotY), -4.0f + glm::max((rotY * 3.5f), -2.0f), 0));
+        vec3 desiredCamPos = position + vec3(transform * vec4(0, camOffsetY + (2 * rotY), -4.0f + glm::max((rotY * 3.5f), -2.0f), 0));
         camPos = mix(camPos, desiredCamPos, dt * cameraSmoothFactor);
         cam->view = lookAt(camPos, position, vec3(transform[1]));
     }
-
-
     //-----------------------------------------------------------------------------------------------------------------
     void
         GolfBall::PhysicsUpdate(float dt)
@@ -148,7 +214,7 @@ namespace Game
 
 
         if (glm::length(linearVelocity) < slowLimit) {
-            // Sets actual velocity to zero when close enough.
+            // Sets actual velocity to zero when close enough. This also makes it possible to hit the ball again.
             linearVelocity = vec3(0, 0, 0);
             ballStill = true;
         }
@@ -186,12 +252,11 @@ namespace Game
             position.y = groundLevel;
         }
 
-
         return;
     }
-    
+    //-----------------------------------------------------------------------------------------------------------------
     void  GolfBall::HitGoal() {
-        
+        state = NameSelect;
     }
 
 }

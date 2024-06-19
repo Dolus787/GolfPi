@@ -3,11 +3,21 @@
 #include "render/input/gamepad.h"
 #include "render/input/keyboard.h"
 
+
 namespace Game
 {
+    enum PlayState {
+        InPlay,
+        NameSelect
+    };
 
     struct GolfBall
     {
+        //Name of player
+        char name[3] = { 'A' , 'A', 'A'};
+        int charIndex = 0;
+
+
         float radius = 0.05;
         glm::vec3 position = glm::vec3(0);
         glm::quat orientation = glm::identity<glm::quat>();
@@ -20,6 +30,7 @@ namespace Game
         const float camOffsetY = 1.0f;
         const float cameraSmoothFactor = 10.0f;
 
+        PlayState state = PlayState::InPlay;
 
         const float friction = 0.65f;
         
@@ -33,7 +44,8 @@ namespace Game
         float chargeTime = 0.0f;
         float maxChargeTime = 1.0f;
 
-        glm::vec2 *goalPos=nullptr;
+        glm::vec2 *goalPos = nullptr;
+        glm::vec3 *spawnPos = nullptr;
 
         unsigned int hits = 0;
 
@@ -52,6 +64,10 @@ namespace Game
         Input::Keyboard *kbd;
 
         void Update(float dt);
+
+        void UpdateInPlay(float dt);
+
+        void UpdateNameSelect();
         
         void HitGoal();
 
