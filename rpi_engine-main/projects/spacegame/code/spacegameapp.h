@@ -29,7 +29,7 @@ public:
 private:
 
 	/// render some nanovg stuff
-	void RenderNanoVG(NVGcontext* vg);
+	void RenderUI(NVGcontext* vg);
 	Game::GolfBall ball;
 
 	Display::Window* window;
