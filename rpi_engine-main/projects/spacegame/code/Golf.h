@@ -1,12 +1,7 @@
 #pragma once
 #include "render/model.h"
-
 #include "render/input/gamepad.h"
-
-namespace Render
-{
-    struct ParticleEmitter;
-}
+#include "render/input/keyboard.h"
 
 namespace Game
 {
@@ -52,6 +47,7 @@ namespace Game
         float groundLevel=0.0f;
 
         Input::Gamepad *Gamepad;
+        Input::Keyboard *kbd;
 
         void Update(float dt);
 

@@ -133,6 +133,7 @@ SpaceGameApp::Run()
     //GolfBall ball;
     ball.model = LoadModel("assets/golf/GLB/ball-red.glb");
     ball.Gamepad = &Gamepad;
+    ball.kbd = Input::GetDefaultKeyboard();
     ball.position = mapManager.maps[mapManager.selectedMap].spawnPos;
 
     std::clock_t c_start = std::clock();
