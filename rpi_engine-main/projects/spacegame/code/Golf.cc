@@ -129,9 +129,16 @@ namespace Game
         payload = Physics::Raycast(position, dir, len);
 
         // To calculate remaining velocity after collision.
-        unsigned int hitCounter=0;
-        
-        while (payload.hit) { 
+        unsigned int hitCounter = 0;
+
+        while (payload.hit) {
+            // Check collision with goal, if closer than approximate width of the pole. Approximate size is 0.05.
+            if (goalPos != nullptr) {
+                if (glm::distance(*goalPos, {payload.hitPoint.x, payload.hitPoint.z}) < 0.05f) {
+                    HitGoal();
+                }
+            }
+
             hitCounter++;
             len = ((len - (payload.hitDistance)) * energyRetention) - (payload.hitDistance * friction);
             dir = glm::normalize(glm::reflect(dir, glm::normalize(lastPayload.hitNormal)) * vec3(1, 0, 1));
@@ -182,4 +189,9 @@ namespace Game
 
         return;
     }
+    
+    void  GolfBall::HitGoal() {
+        
+    }
+
 }

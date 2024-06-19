@@ -135,6 +135,7 @@ SpaceGameApp::Run()
     ball.Gamepad = &Gamepad;
     ball.kbd = Input::GetDefaultKeyboard();
     ball.position = mapManager.maps[mapManager.selectedMap].spawnPos;
+    ball.goalPos = &mapManager.maps[mapManager.selectedMap].goalPos;
 
     std::clock_t c_start = std::clock();
     double dt = 0.01667f;
@@ -190,6 +191,13 @@ void
 SpaceGameApp::Exit()
 {
     this->window->Close();
+}
+//------------------------------------------------------------------------------
+/**
+*/
+void
+SpaceGameApp::SwitchMap()
+{
 }
 //------------------------------------------------------------------------------
 /**

@@ -33,6 +33,8 @@ namespace Game
         float chargeTime = 0.0f;
         float maxChargeTime = 1.0f;
 
+        glm::vec2 *goalPos=nullptr;
+
         unsigned int hits = 0;
 
         float energyRetention = 0.85f;
@@ -50,6 +52,8 @@ namespace Game
         Input::Keyboard *kbd;
 
         void Update(float dt);
+        
+        void HitGoal();
 
         void PhysicsUpdate(float dt);
 

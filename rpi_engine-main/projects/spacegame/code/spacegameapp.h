@@ -26,6 +26,9 @@ public:
 	void Run();
 	/// exit app
 	void Exit();
+	/// switch map
+	void SwitchMap();
+
 private:
 
 	/// render some nanovg stuff

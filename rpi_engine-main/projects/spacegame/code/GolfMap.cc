@@ -220,6 +220,10 @@ void MapManager::SpawnMaps()
 					0,
 					(i % maps[mapCount].width)+ 1 
 				);
+
+				// World space goal position
+				maps[mapCount].goalPos = { translation.x, translation.z };
+
 				glm::vec3 rotationAxis = normalize(translation);
 				glm::mat4 transform = glm::translate(translation) * glm::rotate(goalFlag.rotation, rotationAxis);
 				goalFlag.collider = Physics::CreateCollider(colliderMeshes[flag], transform);
