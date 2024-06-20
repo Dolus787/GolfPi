@@ -14,8 +14,6 @@ namespace Game
 
     struct GolfBall
     {
-
-
         float radius = 0.05;
         glm::vec3 position = glm::vec3(0);
         glm::quat orientation = glm::identity<glm::quat>();
@@ -28,7 +26,7 @@ namespace Game
         const float camOffsetY = 1.0f;
         const float cameraSmoothFactor = 10.0f;
 
-        PlayState state = PlayState::InPlay;
+        PlayState state = PlayState::BeforePlay;
 
         const float friction = 0.65f;
         
@@ -45,7 +43,7 @@ namespace Game
         glm::vec2 *goalPos = nullptr;
         glm::vec3 *spawnPos = nullptr;
 
-        unsigned int hits = 0;
+        unsigned short hits = 0;
 
         float energyRetention = 0.85f;
 
@@ -66,8 +64,6 @@ namespace Game
         void HitGoal();
 
         void PhysicsUpdate(float dt);
-
-        
 
     };
 

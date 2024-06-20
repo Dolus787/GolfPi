@@ -12,6 +12,11 @@
 
 namespace Game
 {
+	struct Highscore {
+		char name[3];
+		unsigned short hits;
+	};
+
 class SpaceGameApp : public Core::App
 {
 public:
@@ -32,18 +37,25 @@ public:
 	void SelectName();
 	/// save balls score
 	void SaveScore();
+	/// save balls score to file
+	void ReadScore();
+	/// insert balls score to highscores
+	void InsertScore();
 
 private:
 
-	/// render some nanovg stuff
+	/// render UI with nanovg
 	void RenderUI(NVGcontext* vg);
 	Game::GolfBall ball;
+
+	//3 maps, 5 highscores éach
+	Highscore highscores[3][5];
 
 	const char* fileName = "HighScores.txt";
 	//Name of player
 	char name[3] = { 'A' , 'A', 'A' };
-	unsigned int charIndex = 0;
-	unsigned int mapIndex;
+	unsigned short charIndex = 0;
+	unsigned short mapIndex;
 
 	Input::Gamepad Gamepad;
 	Input::Keyboard *kbd;

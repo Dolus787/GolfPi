@@ -13,6 +13,7 @@ using namespace Render;
 
 namespace Game
 {
+    
     //-----------------------------------------------------------------------------------------------------------------
     void
         GolfBall::Update(float dt)
@@ -32,6 +33,7 @@ namespace Game
             else if(charging){
                 vec3 desiredVelocity = vec3(0, 0, 1) * ((chargeTime / maxChargeTime)*hitpower);
                 linearVelocity = transform * vec4(desiredVelocity, 0.0f);
+                state = PlayState::InPlay;
                 hits++;
                 charging = false;
                 chargeTime = 0.0f;
@@ -45,6 +47,7 @@ namespace Game
             else if (charging) {
                 vec3 desiredVelocity = vec3(0, 0, 1) * ((chargeTime / maxChargeTime) * hitpower);
                 linearVelocity = transform * vec4(desiredVelocity, 0.0f);
+                state = PlayState::InPlay;
                 hits++;
                 charging = false;
                 chargeTime = 0.0f;
@@ -74,7 +77,6 @@ namespace Game
             rotY -= 0.3f;
 
         }
-
 
 
         const float rotationSpeed = 1.8f * dt;
