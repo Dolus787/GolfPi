@@ -13,87 +13,9 @@ using namespace Render;
 
 namespace Game
 {
+    //-----------------------------------------------------------------------------------------------------------------
     void
         GolfBall::Update(float dt)
-    {
-
-        /*
-        TODO:
-
-        */
-        if (state == PlayState::InPlay) {
-            UpdateInPlay(dt);
-        }
-        else if(state == PlayState::NameSelect){
-            UpdateNameSelect();
-        }
-
-
-    }
-    //-----------------------------------------------------------------------------------------------------------------
-    void
-        GolfBall::UpdateNameSelect()
-    {
-        //Gamepad control
-        /*if (Gamepad->GetButtonState(a).held && chargeTime < maxChargeTime) {
-            chargeTime += dt;
-            charging = true;
-        }
-        else if(charging){
-            vec3 desiredVelocity = vec3(0, 0, 1) * ((chargeTime / maxChargeTime)*hitpower);
-            linearVelocity = transform * vec4(desiredVelocity, 0.0f);
-            hits++;
-            charging = false;
-            chargeTime = 0.0f;
-        }*/
-
-        // Keyboard control for debug purposes.
-        if (kbd->pressed[Input::Key::Down]) {
-            name[charIndex]++;
-            if (name[charIndex] > 90) {
-                name[charIndex] = 65;
-            }
-        }
-        if (kbd->pressed[Input::Key::Up]) {
-            name[charIndex]--;
-            if (name[charIndex] < 65) {
-                name[charIndex] = 90;
-            }
-        }
-        if (kbd->pressed[Input::Key::Right]) {
-            charIndex++;
-            if (charIndex > 2) {
-                charIndex = 0;
-            }
-        }
-        if (kbd->pressed[Input::Key::Left]) {
-            charIndex--;
-            if (charIndex < 0) {
-                charIndex = 2;
-            }
-        }
-        if (kbd->pressed[Input::Key::RightShift]) {
-            state = PlayState::InPlay;
-
-            // Ugly, but it didnt let me do it in the pretty way
-            name[0] = 'A', name[1] = 'A', name[2] = 'A';
-
-            charIndex = 0;
-            linearVelocity = { 0,0,0 };
-
-            if (spawnPos != nullptr) {
-                position = *spawnPos;
-                hits = 0;
-            }
-            else {
-                std::cerr << "SPAWN POSITION NOT PASSED TO BALL";
-            }
-            
-        }
-    }
-    //-----------------------------------------------------------------------------------------------------------------
-    void
-        GolfBall::UpdateInPlay(float dt)
     {
         Camera* cam = CameraManager::GetCamera(CAMERA_MAIN);
 
@@ -258,5 +180,7 @@ namespace Game
     void  GolfBall::HitGoal() {
         state = NameSelect;
     }
+    //-----------------------------------------------------------------------------------------------------------------
+
 
 }

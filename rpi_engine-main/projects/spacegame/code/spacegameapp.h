@@ -28,12 +28,25 @@ public:
 	void Exit();
 	/// switch map
 	void SwitchMap();
+	/// select name
+	void SelectName();
+	/// save balls score
+	void SaveScore();
 
 private:
 
 	/// render some nanovg stuff
 	void RenderUI(NVGcontext* vg);
 	Game::GolfBall ball;
+
+	const char* fileName = "HighScores.txt";
+	//Name of player
+	char name[3] = { 'A' , 'A', 'A' };
+	unsigned int charIndex = 0;
+	unsigned int mapIndex;
+
+	Input::Gamepad Gamepad;
+	Input::Keyboard *kbd;
 
 	Display::Window* window;
 };

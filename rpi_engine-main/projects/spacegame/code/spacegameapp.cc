@@ -9,6 +9,7 @@
 #include "render/renderdevice.h"
 #include "render/shaderresource.h"
 #include <vector>
+#include <fstream>
 #include "render/textureresource.h"
 #include "render/model.h"
 #include "render/cameramanager.h"
@@ -102,9 +103,9 @@ SpaceGameApp::Run()
     TextureResourceId skyboxId = TextureResource::LoadCubemap("skybox", skybox, true);
     RenderDevice::SetSkybox(skyboxId);
     
-    Input::Keyboard* kbd = Input::GetDefaultKeyboard();
+    kbd = Input::GetDefaultKeyboard();
 
-    Input::Gamepad Gamepad = Input::Gamepad();
+    Gamepad = Input::Gamepad();
 
     const int numLights = 4;
     Render::PointLightId lights[numLights];
@@ -137,7 +138,7 @@ SpaceGameApp::Run()
     ball.position = mapManager.maps[mapManager.selectedMap].spawnPos;
     ball.spawnPos = &mapManager.maps[mapManager.selectedMap].spawnPos;
     ball.goalPos = &mapManager.maps[mapManager.selectedMap].goalPos;
-
+    mapIndex = mapManager.selectedMap;
     std::clock_t c_start = std::clock();
     double dt = 0.01667f;
 
@@ -161,7 +162,13 @@ SpaceGameApp::Run()
         }
         Gamepad.Update();
         //Physics::DebugDrawColliders();
-        ball.Update(dt);
+        
+        if (ball.state == PlayState::InPlay) {
+            ball.Update(dt);
+        }
+        else {
+            SelectName();
+        }
 
         // Store all drawcalls in the render device
         for (auto const& tile : mapManager.tiles)
@@ -222,11 +229,11 @@ SpaceGameApp::RenderUI(NVGcontext* vg)
     nvgStrokeColor(vg, nvgRGBA(0, 0, 0, 32));
     nvgStroke(vg);
 
-    nvgFontSize(vg, 30.0f);
     nvgFontFace(vg, "sans");
     nvgFillColor(vg, nvgRGBA(255, 255, 255, 200));
 
     if (ball.state == Game::PlayState::InPlay) {
+        nvgFontSize(vg, 30.0f);
         int ballCharge_I = (int)((ball.chargeTime / ball.maxChargeTime) * 100);
         std::string ballCharge_String = std::to_string(ballCharge_I).append("% charge");
         const char* ballCharge_CString = ballCharge_String.c_str();
@@ -238,13 +245,96 @@ SpaceGameApp::RenderUI(NVGcontext* vg)
 
     }
     else if (ball.state == Game::PlayState::NameSelect) {
-        const char* newName = ball.name;
-
-        nvgText(vg, 5, 30, newName, NULL);
+        nvgFontSize(vg, 100.0f);
+        const char* newName = name;
+        int x, y;
+        this->window->GetSize(x, y);
+        nvgText(vg, x/2-100, y/2, newName, NULL);
     }
 
 
     nvgRestore(vg);
+}
+//-----------------------------------------------------------------------------------------------------------------
+void
+SpaceGameApp::SelectName()
+{
+    //Gamepad control
+    /*if (Gamepad->GetButtonState(a).held && chargeTime < maxChargeTime) {
+        chargeTime += dt;
+        charging = true;
+    }
+    else if(charging){
+        vec3 desiredVelocity = vec3(0, 0, 1) * ((chargeTime / maxChargeTime)*hitpower);
+        linearVelocity = transform * vec4(desiredVelocity, 0.0f);
+        hits++;
+        charging = false;
+        chargeTime = 0.0f;
+    }*/
+
+    // Keyboard control for debug purposes.
+    if (kbd->pressed[Input::Key::Down]) {
+        name[charIndex]++;
+        if (name[charIndex] > 90) {
+            name[charIndex] = 65;
+        }
+    }
+
+    if (kbd->pressed[Input::Key::Up]) {
+        name[charIndex]--;
+        if (name[charIndex] < 65) {
+            name[charIndex] = 90;
+        }
+    }
+
+    if (kbd->pressed[Input::Key::Right]) {
+        charIndex++;
+        if (charIndex > 2) {
+            charIndex = 0;
+        }
+    }
+
+    if (kbd->pressed[Input::Key::Left]) {
+        charIndex--;
+        if (charIndex < 0) {
+            charIndex = 2;
+        }
+    }
+
+    if (kbd->pressed[Input::Key::RightShift]) {
+        ball.state = PlayState::InPlay;
+
+        // Ugly, but it didnt let me do it in the pretty way
+
+        if (ball.spawnPos != nullptr) {
+            SaveScore();
+            ball.position = *ball.spawnPos;
+            ball.hits = 0;
+            ball.linearVelocity = { 0,0,0 };
+        }
+
+        charIndex = 0;
+        name[0] = 'A', name[1] = 'A', name[2] = 'A';
+
+    }
+}
+
+void
+SpaceGameApp::SaveScore() {
+    /*
+    Save format:
+    no spaces with the order of, map index, name, hits. New line for new score. New scores at bottom, score reader will place newer score ahead when displaying.
+
+    It will look like this:
+
+    0ARO4
+    2LOV3
+    
+    */
+
+    std::ofstream file(fileName);
+    file << mapIndex << name[0] << name[1] << name[2] << ball.hits <<"\n";
+    file.close();
 }
 
 } // namespace Game

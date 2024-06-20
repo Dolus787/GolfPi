@@ -8,14 +8,12 @@ namespace Game
 {
     enum PlayState {
         InPlay,
-        NameSelect
+        BeforePlay,
+        NameSelect,
     };
 
     struct GolfBall
     {
-        //Name of player
-        char name[3] = { 'A' , 'A', 'A'};
-        int charIndex = 0;
 
 
         float radius = 0.05;
@@ -64,14 +62,12 @@ namespace Game
         Input::Keyboard *kbd;
 
         void Update(float dt);
-
-        void UpdateInPlay(float dt);
-
-        void UpdateNameSelect();
         
         void HitGoal();
 
         void PhysicsUpdate(float dt);
+
+        
 
     };
 
