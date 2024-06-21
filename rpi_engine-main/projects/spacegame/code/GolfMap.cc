@@ -73,7 +73,7 @@ float MapTile::SetRotation(GolfMap map, int tileLoc)
 
 		if (tileChar == '2' || tileChar == 'H')
 		{
-			if (emptyTilesFoundList[0] || emptyTilesFoundList[2] || map.map[leftTile] == 'G' || map.map[rightTile] == 'G' || map.map[leftTile] == '2' || map.map[rightTile] == '2')
+			if (emptyTilesFoundList[0] || emptyTilesFoundList[2] || map.map[leftTile] == 'G' || map.map[rightTile] == 'G' || ((map.map[leftTile] == '2' || map.map[rightTile] == '2' || map.map[leftTile] == 'H' || map.map[rightTile] == 'H') && (!emptyTilesFoundList[1] && !emptyTilesFoundList[3])))
 			{
 				return 0;
 			}

@@ -32,6 +32,8 @@ public:
 	void Run();
 	/// exit app
 	void Exit();
+	/// restart map
+	void ResetMap();
 	/// switch map
 	void SwitchMap(MapManager* manager);
 	/// select name

@@ -80,9 +80,9 @@ SpaceGameApp::Run()
 {
     MapManager* mapManager = new MapManager();
     mapManager->maps = { 
-        GolfMap("C2C202CHW00200200H00200G", {1,1,0}, 3),
-        GolfMap("",{0,1,0}, 1),
-        GolfMap("C2Hl1r22C200I1I002200000002r1I00I11ll3l2Wr11r2000H0002200020002C222W2W2C000000H00000000G00", { 1,1,4 }, 9)
+        GolfMap("C2C202CHW00200200H03W00G", {1,1,0}, 3),
+        GolfMap("CHC00020CC00200r1IH0C2HCW2C000G00000",{2,1,3}, 6),
+        GolfMap("C22l1r22C200I1I002200000002r1I00I11ll3l2Wr11IH000H0000200020000C222W2C00000000200000000G00", { 1,1,4 }, 9)
     };
     //map for rotation testing purpose
     //mapManager->maps = { GolfMap("00G000C2C0G2O2G0C2C000G00", { 0,0,0 }, 5) };
@@ -157,6 +157,11 @@ SpaceGameApp::Run()
             ball.switchMap = false;
             SwitchMap(mapManager);
         }
+        if (ball.resetMap)
+        {
+            ball.resetMap = false;
+            ResetMap();
+        }
         if (ball.state == PlayState::InPlay || ball.state == PlayState::BeforePlay) {
             ball.Update(dt);
         }
@@ -197,11 +202,32 @@ SpaceGameApp::Exit()
 /**
 */
 void
+SpaceGameApp::ResetMap()
+{
+    ball.state = PlayState::BeforePlay;
+    if (ball.spawnPos != nullptr) {
+        ball.position = *ball.spawnPos;
+        ball.hits = 0;
+        ball.linearVelocity = { 0,0,0 };
+    }
+}
+//------------------------------------------------------------------------------
+/**
+*/
+void
 SpaceGameApp::SwitchMap(MapManager* manager)
 {
     mapIndex = manager->NextMap();
-    ball.position = manager->maps[manager->selectedMap].spawnPos;
-    ball.linearVelocity = { 0,0,0 };
+    ball.state = PlayState::BeforePlay;
+
+    ball.spawnPos = &manager->maps[mapIndex].spawnPos;
+    ball.goalPos = &manager->maps[mapIndex].goalPos;
+
+    if (ball.spawnPos != nullptr) {
+        ball.position = *ball.spawnPos;
+        ball.hits = 0;
+        ball.linearVelocity = { 0,0,0 };
+    }
 }
 //------------------------------------------------------------------------------
 /**
@@ -316,20 +342,12 @@ SpaceGameApp::SelectName()
     }
 
     if (kbd->pressed[Input::Key::RightShift]) {
-        ball.state = PlayState::BeforePlay;
-
-
-        if (ball.spawnPos != nullptr) {
-            InsertScore();
-            ball.position = *ball.spawnPos;
-            ball.hits = 0;
-            ball.linearVelocity = { 0,0,0 };
-        }
-
+        
+        InsertScore();
         charIndex = 0;
         // Ugly, but it didnt let me do it in the nice way
         name[0] = 'A', name[1] = 'A', name[2] = 'A';
-
+        ball.switchMap = true;
     }
 }
 //-----------------------------------------------------------------------------------------------------------------

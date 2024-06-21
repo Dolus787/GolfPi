@@ -89,6 +89,10 @@ namespace Game
         {
             switchMap = true;
         }
+        if (kbd->pressed[Input::Key::R] && !resetMap)
+        {
+            resetMap = true;
+        }
 
 
         const float rotationSpeed = 1.8f * dt;
