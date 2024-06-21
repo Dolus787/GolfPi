@@ -30,6 +30,8 @@ namespace Game
                 chargeTime += dt;
                 charging = true;
             }
+
+
             else if(charging){
                 vec3 desiredVelocity = vec3(0, 0, 1) * ((chargeTime / maxChargeTime)*hitpower);
                 linearVelocity = transform * vec4(desiredVelocity, 0.0f);
@@ -37,6 +39,11 @@ namespace Game
                 hits++;
                 charging = false;
                 chargeTime = 0.0f;
+            }
+            //switch map
+            if (Gamepad->GetButtonState(back).justPressed && !switchMap)
+            {
+                switchMap = true;
             }*/
 
             // Keyboard control for debug purposes.
@@ -76,6 +83,11 @@ namespace Game
         else if (kbd->held[Input::Key::Down]) {
             rotY -= 0.3f;
 
+        }
+        // Switch map
+        if (kbd->pressed[Input::Key::Tab] && !switchMap)
+        {
+            switchMap = true;
         }
 
 

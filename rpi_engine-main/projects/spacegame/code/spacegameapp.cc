@@ -21,9 +21,9 @@
 #include "render/input/gamepad.h"
 #include "core/cvar.h"
 #include "render/physics.h"
+#include "GolfMap.h"
 #include <chrono>
 #include <string>
-#include "GolfMap.h"
 #include <Bits.h>
 #include <string>
 
@@ -78,15 +78,21 @@ SpaceGameApp::Open()
 void
 SpaceGameApp::Run()
 {
-    MapManager mapManager = MapManager();
-    mapManager.maps = { GolfMap("C2Hl1r22C200I1I002200000002r1I00I11ll3l2Wr11r2000H0002200020002C222W2W2C000000H00000000G00", { 1,1,5 }, 9), GolfMap("00G000C2C0G2O2G0C2C000G00", {0,0,0},5), GolfMap() };
+    MapManager* mapManager = new MapManager();
+    mapManager->maps = { 
+        GolfMap("C2C202CHW00200200H00200G", {1,1,0}, 3),
+        GolfMap("",{0,1,0}, 1),
+        GolfMap("C2Hl1r22C200I1I002200000002r1I00I11ll3l2Wr11r2000H0002200020002C222W2W2C000000H00000000G00", { 1,1,4 }, 9)
+    };
+    //map for rotation testing purpose
+    //mapManager->maps = { GolfMap("00G000C2C0G2O2G0C2C000G00", { 0,0,0 }, 5) };
     int w;
     int h;
     this->window->GetSize(w, h);
     glm::mat4 projection = glm::perspective(glm::radians(90.0f), float(w) / float(h), 0.01f, 1000.f);
     Camera* cam = CameraManager::GetCamera(CAMERA_MAIN);
     cam->projection = projection;
-    mapManager.SpawnMaps();
+    mapManager->SpawnMaps();
 
 
 
@@ -120,16 +126,16 @@ SpaceGameApp::Run()
     ball.model = LoadModel("assets/golf/GLB/ball-red.glb");
     ball.Gamepad = &Gamepad;
     ball.kbd = Input::GetDefaultKeyboard();
-    ball.position = mapManager.maps[mapManager.selectedMap].spawnPos;
-    ball.spawnPos = &mapManager.maps[mapManager.selectedMap].spawnPos;
-    ball.goalPos = &mapManager.maps[mapManager.selectedMap].goalPos;
-    mapIndex = mapManager.selectedMap;
+    ball.position = mapManager->maps[mapManager->selectedMap].spawnPos;
+    ball.spawnPos = &mapManager->maps[mapManager->selectedMap].spawnPos;
+    ball.goalPos = &mapManager->maps[mapManager->selectedMap].goalPos;
+    mapIndex = mapManager->selectedMap;
     std::clock_t c_start = std::clock();
     double dt = 0.01667f;
 
     
 
-    // game loop
+    // game loop.
     ReadScore();
     while (this->window->IsOpen()){
         
@@ -146,7 +152,11 @@ SpaceGameApp::Run()
         }
         Gamepad.Update();
         //Physics::DebugDrawColliders();
-        
+        if (ball.switchMap)
+        {
+            ball.switchMap = false;
+            SwitchMap(mapManager);
+        }
         if (ball.state == PlayState::InPlay || ball.state == PlayState::BeforePlay) {
             ball.Update(dt);
         }
@@ -155,7 +165,7 @@ SpaceGameApp::Run()
         }
 
         // Store all drawcalls in the render device
-        for (auto const& tile : mapManager.tiles){
+        for (auto const& tile : mapManager->tiles){
             RenderDevice::Draw(tile.model, tile.transform);
         }
 
@@ -187,8 +197,11 @@ SpaceGameApp::Exit()
 /**
 */
 void
-SpaceGameApp::SwitchMap()
+SpaceGameApp::SwitchMap(MapManager* manager)
 {
+    mapIndex = manager->NextMap();
+    ball.position = manager->maps[manager->selectedMap].spawnPos;
+    ball.linearVelocity = { 0,0,0 };
 }
 //------------------------------------------------------------------------------
 /**

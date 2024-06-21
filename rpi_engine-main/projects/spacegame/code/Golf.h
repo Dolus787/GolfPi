@@ -33,7 +33,7 @@ namespace Game
         const float slowLimit = 0.04f;
 
         bool ballStill = false;
-
+        bool switchMap = false;
         bool charging = false; 
 
         float hitpower = 10.0f;

@@ -10,6 +10,7 @@
 #include "render/window.h"
 #include "Golf.h"
 
+struct MapManager;
 namespace Game
 {
 	struct Highscore {
@@ -32,7 +33,7 @@ public:
 	/// exit app
 	void Exit();
 	/// switch map
-	void SwitchMap();
+	void SwitchMap(MapManager* manager);
 	/// select name
 	void SelectName();
 	/// save balls score
@@ -47,7 +48,7 @@ private:
 	/// render UI with nanovg
 	void RenderUI(NVGcontext* vg);
 	Game::GolfBall ball;
-
+	//MapManager* mapManager = new MapManager();
 	//3 maps, 5 highscores éach
 	Highscore highscores[3][5];
 

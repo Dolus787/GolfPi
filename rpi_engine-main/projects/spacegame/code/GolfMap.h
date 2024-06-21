@@ -29,15 +29,6 @@ struct MapTile
     glm::mat4 transform = glm::mat4();
     //The amount of walls the tile has
     float rotation = 0;
-    bool manualRot = false;
-    // list to help set rotations for corners
-    int cornerRotations[4][2] =
-    {
-        {true, true},
-        {true, false},
-        {false, true},
-        {false, false},
-    };
     //the char of the tile in the map string
     char tileChar ='0';
     MapTile() = default;
@@ -90,22 +81,21 @@ struct MapManager
     MapManager() = default;
     //Spawn all maps into the world
     void SpawnMaps();
-    //Load a map (really just moving the ball to the position of the next selected map)
-    void LoadMap();
+    int NextMap();
 };
 
 //------------------------------------------------------------------------------
 /**
 * Struct containing all the necessities for the golf maps, the map is a string
-* Usage: GolfMap(string map, vec3 spawn point, vec3 goal location, int map width)
+* Usage: GolfMap(string map, vec3 spawn point, int map width)
 */
 struct GolfMap
 {
 	std::string map = "32C00H00G";
-    glm::vec3 spawnPos = {0,0,0};
+    glm::vec3 spawnPos = {0,1,0};
     glm::vec2 goalPos = {2,2};
-	int goalPosInt = 8;
+	int spawnPosInt = 0;
 	int width = 3;
 	GolfMap() = default;
-    GolfMap(std::string newMap, glm::vec3 mapSpawn, int mapWidth, std::string manualRotation = "");
+    GolfMap(std::string newMap, glm::vec3 mapSpawn, int mapWidth);
 };
