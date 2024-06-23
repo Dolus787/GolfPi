@@ -26,7 +26,8 @@ namespace Game
         if (ballStill) {
 
             // Gamepad control.
-            /*if (Gamepad->GetButtonState(a).held && chargeTime < maxChargeTime) {
+            /*
+            if (Gamepad->GetButtonState(a).held && chargeTime < maxChargeTime) {
                 chargeTime += dt;
                 charging = true;
             }
@@ -44,7 +45,12 @@ namespace Game
             if (Gamepad->GetButtonState(back).justPressed && !switchMap)
             {
                 switchMap = true;
-            }*/
+            }
+            if (Gamepad->GetButtonState(y).justPressed && !resetMap)
+            {
+                resetMap == true;
+            }
+            /**/
 
             // Keyboard control for debug purposes.
             if (kbd->held[Input::Key::Space] && chargeTime < maxChargeTime) {
