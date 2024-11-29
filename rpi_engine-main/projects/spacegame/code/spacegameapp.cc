@@ -24,7 +24,6 @@
 #include "GolfMap.h"
 #include <chrono>
 #include <string>
-#include <Bits.h>
 #include <string>
 
 using namespace Display;
