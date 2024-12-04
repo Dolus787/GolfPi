@@ -1,23 +1,13 @@
 #include "config.h"
 #include "spacegameapp.h"
 #include <cstring>
-#include "imgui.h"
 #include "render/renderdevice.h"
 #include "render/shaderresource.h"
 #include <vector>
 #include "render/textureresource.h"
-#include "render/model.h"
-#include "render/cameramanager.h"
-#include "render/lightserver.h"
-#include "render/debugrender.h"
-#include "core/random.h"
-#include "render/input/inputserver.h"
-#include "render/input/gamepad.h"
-#include "core/cvar.h"
 #include "render/physics.h"
-#include <chrono>
-#include "Golf.h"
 #include <string>
+#include <cassert>
 #include "GolfMap.h"
 
 #define PI 3.1415926535f
@@ -26,16 +16,16 @@ MapTile::MapTile(char tileChar) : tileChar(tileChar){}
 
 size_t MapTile::SetTileType()
 {
+	bool typeFound = false;
 	for (int i = 0; i < tileStringTypes.size(); i++)
 	{
 		if (tileChar == tileStringTypes[i])
 		{
 			return i;
+			typeFound = true;
 		}
 	}
-	std::cout << "[NO MODEL FOUND FOR TILE]" << std::endl;
-	//9 is out of range for the models list
-	return 9;
+	assert(typeFound == true && "[NO KNOWN MODEL FOUND FOR TILE]");
 }
 float MapTile::SetRotation(GolfMap map, int tileLoc)
 {
@@ -179,7 +169,7 @@ void MapManager::SpawnMaps()
 				glm::mat4 transform = glm::translate(translation) * glm::rotate(goalFlag.rotation, rotationAxis);
 				goalFlag.collider = Physics::CreateCollider(colliderMeshes[flag], transform);
 				goalFlag.transform = transform;
-				tiles.push_back(goalFlag);
+				maps[mapCount].tiles.push_back(goalFlag);
 			}
             if (maps[mapCount].map[i] != '0')
             {
@@ -199,7 +189,7 @@ void MapManager::SpawnMaps()
 				tile.collider = Physics::CreateCollider(colliderMeshes[resourceIndex], transform);
 				tile.transform = transform;
 				
-				tiles.push_back(tile);
+				maps[mapCount].tiles.push_back(tile);
             }
 		}
     }

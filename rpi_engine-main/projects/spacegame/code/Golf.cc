@@ -26,7 +26,6 @@ namespace Game
         if (ballStill) {
 
             // Gamepad control.
-            /*
             if (Gamepad->GetButtonState(a).held && chargeTime < maxChargeTime) {
                 chargeTime += dt;
                 charging = true;
@@ -41,30 +40,20 @@ namespace Game
                 charging = false;
                 chargeTime = 0.0f;
             }
-            //switch map
-            if (Gamepad->GetButtonState(back).justPressed && !switchMap)
-            {
-                switchMap = true;
-            }
-            if (Gamepad->GetButtonState(y).justPressed && !resetMap)
-            {
-                resetMap == true;
-            }
-            /**/
 
             // Keyboard control for debug purposes.
-            if (kbd->held[Input::Key::Space] && chargeTime < maxChargeTime) {
-                chargeTime += dt;
-                charging = true;
-            }
-            else if (charging) {
-                vec3 desiredVelocity = vec3(0, 0, 1) * ((chargeTime / maxChargeTime) * hitpower);
-                linearVelocity = transform * vec4(desiredVelocity, 0.0f);
-                state = PlayState::InPlay;
-                hits++;
-                charging = false;
-                chargeTime = 0.0f;
-            }
+            //if (kbd->held[Input::Key::Space] && chargeTime < maxChargeTime) {
+            //    chargeTime += dt;
+            //    charging = true;
+            //}
+            //else if (charging) {
+            //    vec3 desiredVelocity = vec3(0, 0, 1) * ((chargeTime / maxChargeTime) * hitpower);
+            //    linearVelocity = transform * vec4(desiredVelocity, 0.0f);
+            //    state = PlayState::InPlay;
+            //    hits++;
+            //    charging = false;
+            //    chargeTime = 0.0f;
+            //}
 
         }
 
@@ -73,8 +62,33 @@ namespace Game
         //float rotY = -glm::min(Gamepad->GetRightJoystickY(), 0.4f);
 
 
+			//switch map
+		if (Gamepad->GetButtonState(back).justPressed && !switchMap)
+		{
+			switchMap = true;
+		}
+		if (Gamepad->GetButtonState(y).justPressed && !resetMap)
+		{
+			resetMap = true;
+		}
+
         float rotX = 0.0f, rotY = 0.0f;
 
+        // Rotate x of camera
+        if (Gamepad->GetLeftJoystickX() != 0)
+        {
+            rotX -= 0.5f * Gamepad->GetLeftJoystickX();
+        }
+        // Rotate camera up
+        if (Gamepad->GetRightJoystickY() > 0.1)
+        {
+            rotY += 1.0f * Gamepad->GetRightJoystickY();
+        }
+        // Rotate camera down
+        if (Gamepad->GetRightJoystickY() < -0.1)
+        {
+            rotY += 0.3f * Gamepad->GetRightJoystickY();
+        }
         // Rotate ball and camera (kbd)
         if (kbd->held[Input::Key::Left]) {
             rotX += 0.5f;
@@ -112,7 +126,7 @@ namespace Game
         transform = T * (mat4)quat(vec3(0, 0, rotationZ));
 
         // update camera view transform
-        vec3 desiredCamPos = position + vec3(transform * vec4(0, camOffsetY + (2 * rotY), -4.0f + glm::max((rotY * 3.5f), -2.0f), 0));
+        vec3 desiredCamPos = position + vec3(transform * vec4(0, camOffsetY + (2 * rotY), camOffsetZ + glm::max((rotY * 1.5f), -2.0f), 0));
         camPos = mix(camPos, desiredCamPos, dt * cameraSmoothFactor);
         cam->view = lookAt(camPos, position, vec3(transform[1]));
     }

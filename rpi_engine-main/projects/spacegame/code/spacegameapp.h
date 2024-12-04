@@ -60,7 +60,7 @@ private:
 	unsigned short charIndex = 0;
 	unsigned short mapIndex;
 
-	Input::Gamepad Gamepad;
+	Input::Gamepad *Gamepad;
 	Input::Keyboard *kbd;
 
 	Display::Window* window;

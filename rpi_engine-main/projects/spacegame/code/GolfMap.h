@@ -94,6 +94,7 @@ struct GolfMap
 	std::string map = "32C00H00G";
     glm::vec3 spawnPos = {0,1,0};
     glm::vec2 goalPos = {2,2};
+    std::vector<MapTile> tiles;
 	int spawnPosInt = 0;
 	int width = 3;
 	GolfMap() = default;

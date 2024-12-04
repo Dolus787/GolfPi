@@ -110,7 +110,7 @@ SpaceGameApp::Run()
     
     kbd = Input::GetDefaultKeyboard();
 
-    Gamepad = Input::Gamepad();
+    Gamepad = new Input::Gamepad();
 
     const int numLights = 4;
     Render::PointLightId lights[numLights];
@@ -123,7 +123,7 @@ SpaceGameApp::Run()
 
     //GolfBall ball;
     ball.model = LoadModel("assets/golf/GLB/ball-red.glb");
-    ball.Gamepad = &Gamepad;
+    ball.Gamepad = Gamepad;
     ball.kbd = Input::GetDefaultKeyboard();
     ball.position = mapManager->maps[mapManager->selectedMap].spawnPos;
     ball.spawnPos = &mapManager->maps[mapManager->selectedMap].spawnPos;
@@ -149,7 +149,7 @@ SpaceGameApp::Run()
         if (kbd->pressed[Input::Key::Code::End]){
             ShaderResource::ReloadShaders();
         }
-        Gamepad.Update();
+        Gamepad->Update();
         //Physics::DebugDrawColliders();
         if (ball.switchMap)
         {
@@ -169,7 +169,7 @@ SpaceGameApp::Run()
         }
 
         // Store all drawcalls in the render device
-        for (auto const& tile : mapManager->tiles){
+        for (auto const& tile : mapManager->maps[mapManager->selectedMap].tiles){
             RenderDevice::Draw(tile.model, tile.transform);
         }
 
@@ -184,7 +184,7 @@ SpaceGameApp::Run()
         auto timeEnd = std::chrono::steady_clock::now();
         dt = std::min(0.04, std::chrono::duration<double>(timeEnd - timeStart).count());
 
-        if (kbd->pressed[Input::Key::Code::Escape]||Gamepad.GetButtonState(Input::button::start).justPressed)
+        if (kbd->pressed[Input::Key::Code::Escape]||Gamepad->GetButtonState(Input::button::start).justPressed)
             this->Exit();
 	}
 }
@@ -299,55 +299,84 @@ void
 SpaceGameApp::SelectName()
 {
     //Gamepad control
-    /*if (Gamepad->GetButtonState(a).held && chargeTime < maxChargeTime) {
-        chargeTime += dt;
-        charging = true;
-    }
-    else if(charging){
-        vec3 desiredVelocity = vec3(0, 0, 1) * ((chargeTime / maxChargeTime)*hitpower);
-        linearVelocity = transform * vec4(desiredVelocity, 0.0f);
-        hits++;
-        charging = false;
-        chargeTime = 0.0f;
-    }*/
-
-    // Keyboard control for debug purposes.
-    if (kbd->pressed[Input::Key::Down]) {
+    if (Gamepad->GetButtonState(Input::button::down).justPressed) {
         name[charIndex]++;
         if (name[charIndex] > 90) {
             name[charIndex] = 65;
         }
     }
 
-    if (kbd->pressed[Input::Key::Up]) {
+    if (Gamepad->GetButtonState(Input::button::up).justPressed) {
         name[charIndex]--;
         if (name[charIndex] < 65) {
             name[charIndex] = 90;
         }
     }
 
-    if (kbd->pressed[Input::Key::Right]) {
+    if (Gamepad->GetButtonState(Input::button::right).justPressed) {
         charIndex++;
         if (charIndex > 2) {
             charIndex = 0;
         }
     }
 
-    if (kbd->pressed[Input::Key::Left]) {
+    if (Gamepad->GetButtonState(Input::button::left).justPressed) {
         charIndex--;
         if (charIndex < 0) {
             charIndex = 2;
         }
     }
 
-    if (kbd->pressed[Input::Key::RightShift]) {
+    if (Gamepad->GetButtonState(Input::button::x).justPressed) {
         
         InsertScore();
         charIndex = 0;
+        for (int i = 0; i < 3; i++)
+        {
+            name[i] = 'A';
+        }
         // Ugly, but it didnt let me do it in the nice way
-        name[0] = 'A', name[1] = 'A', name[2] = 'A';
+        //name[0] = 'A', name[1] = 'A', name[2] = 'A';
         ball.switchMap = true;
     }
+
+    // Keyboard control for debug purposes.
+    //if (kbd->pressed[Input::Key::Down]) {
+    //    name[charIndex]++;
+    //    if (name[charIndex] > 90) {
+    //        name[charIndex] = 65;
+    //    }
+    //}
+
+    //if (kbd->pressed[Input::Key::Up]) {
+    //    name[charIndex]--;
+    //    if (name[charIndex] < 65) {
+    //        name[charIndex] = 90;
+    //    }
+    //}
+
+    //if (kbd->pressed[Input::Key::Right]) {
+    //    charIndex++;
+    //    if (charIndex > 2) {
+    //        charIndex = 0;
+    //    }
+    //}
+
+    //if (kbd->pressed[Input::Key::Left]) {
+    //    charIndex--;
+    //    if (charIndex < 0) {
+    //        charIndex = 2;
+    //    }
+    //}
+
+    //if (kbd->pressed[Input::Key::RightShift]) {
+    //    
+    //    InsertScore();
+    //    charIndex = 0;
+    //    // Ugly, but it didnt let me do it in the nice way
+    //    name[0] = 'A', name[1] = 'A', name[2] = 'A';
+    //    ball.switchMap = true;
+    //}
 }
 //-----------------------------------------------------------------------------------------------------------------
     /*
