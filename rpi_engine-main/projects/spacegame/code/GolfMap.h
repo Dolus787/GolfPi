@@ -1,6 +1,7 @@
 #pragma once
 using namespace Render;
 
+
 struct GolfMap;
 enum TileType
 {
@@ -77,7 +78,6 @@ struct MapManager
 		Physics::LoadColliderMesh("assets/golf/GLB/flag-red.glb"),
 		Physics::LoadColliderMesh("assets/golf/GLB/club-red.glb")
     };
-    std::vector<MapTile> tiles;
     MapManager() = default;
     //Spawn all maps into the world
     void SpawnMaps();
