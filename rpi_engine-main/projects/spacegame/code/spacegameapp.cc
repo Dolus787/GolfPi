@@ -29,6 +29,9 @@
 using namespace Display;
 using namespace Render;
 
+#ifdef _DEBUG
+#endif
+
 namespace Game
 {
 
