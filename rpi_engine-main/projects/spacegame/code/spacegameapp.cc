@@ -23,8 +23,6 @@
 #include "render/physics.h"
 #include "GolfMap.h"
 #include <chrono>
-#include <string>
-#include <string>
 
 using namespace Display;
 using namespace Render;
@@ -112,13 +110,26 @@ SpaceGameApp::Run()
 
     Gamepad = new Input::Gamepad();
 
-    const int numLights = 4;
+    const int numLights = 1;
     Render::PointLightId lights[numLights];
-    this->window->SetNanoFunc([this](NVGcontext* vg)
+    for (int i = 0; i < numLights; i++)
     {
-        this->RenderUI(vg);
-    });
-
+        this->window->SetNanoFunc([this](NVGcontext* vg)
+        {
+            this->RenderUI(vg);
+        });
+        glm::vec3 translation = glm::vec3(
+            Core::RandomFloatNTP() * 20.0f,
+            Core::RandomFloatNTP() * 20.0f,
+            Core::RandomFloatNTP() * 20.0f
+        );
+        glm::vec3 color = glm::vec3(
+            Core::RandomFloat(),
+            Core::RandomFloat(),
+            Core::RandomFloat()
+        );
+        lights[i] = Render::LightServer::CreatePointLight(translation, color, Core::RandomFloat() * 4.0f, 1.0f + (15 + Core::RandomFloat() * 10.0f));
+    }
 
 
     //GolfBall ball;
