@@ -151,7 +151,11 @@ SpaceGameApp::Run()
         frame = (frame + 1) % 10;
         if (frame == 0)
         {
+#ifdef __linux__
+            system("clear");
+#elif _WIN32
             system("cls");
+#endif
             for (auto i : Gamepad->buttonstates)
                 std::cout << i.held << "\n";
         }
