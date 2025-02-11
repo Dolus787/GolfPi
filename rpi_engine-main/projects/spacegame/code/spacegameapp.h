@@ -57,7 +57,7 @@ private:
 	const char* fileName = "HighScores.txt";
 	//Name of player
 	char name[3] = { 'A' , 'A', 'A' };
-	unsigned short charIndex = 0;
+	short charIndex = 0;
 	unsigned short mapIndex;
 
 	Input::Gamepad *Gamepad;

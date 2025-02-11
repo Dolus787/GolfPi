@@ -7,6 +7,28 @@
 
 namespace Input
 {
+#ifdef __linux__
+    enum button {
+        // Don't remove last, add ahead of it.
+        a,
+        b,
+        x,
+        y,
+        leftShoulder,
+        rightShoulder,
+        back,
+        start,
+        home,
+        leftStick,
+        rightStick,
+        up,
+        right,
+        down,
+        left,
+
+        __NUM_BUTTONS__
+    };
+#elif _WIN32
     enum button {
         // Don't remove last, add ahead of it.
         a,
@@ -26,6 +48,7 @@ namespace Input
 
         __NUM_BUTTONS__
     };
+#endif
 
     struct buttonState {
         buttonState(){

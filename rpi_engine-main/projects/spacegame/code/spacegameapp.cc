@@ -143,12 +143,18 @@ SpaceGameApp::Run()
     std::clock_t c_start = std::clock();
     double dt = 0.01667f;
 
-    
+    int frame = 0;
 
     // game loop.
     ReadScore();
     while (this->window->IsOpen()){
-        
+        frame = (frame + 1) % 10;
+        if (frame == 0)
+        {
+            system("cls");
+            for (auto i : Gamepad->buttonstates)
+                std::cout << i.held << "\n";
+        }
         auto timeStart = std::chrono::steady_clock::now();
 		glClear(GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);
@@ -325,17 +331,12 @@ SpaceGameApp::SelectName()
     }
 
     if (Gamepad->GetButtonState(Input::button::right).justPressed) {
-        charIndex++;
-        if (charIndex > 2) {
-            charIndex = 0;
-        }
+        charIndex = (charIndex + 1) % 3;
     }
 
     if (Gamepad->GetButtonState(Input::button::left).justPressed) {
-        charIndex--;
-        if (charIndex < 0) {
-            charIndex = 2;
-        }
+        // + 2 because - 1 would yeild only 0 or 1 and we and 0,1 and 2
+        charIndex = (charIndex + 2) % 3;
     }
 
     if (Gamepad->GetButtonState(Input::button::x).justPressed) {

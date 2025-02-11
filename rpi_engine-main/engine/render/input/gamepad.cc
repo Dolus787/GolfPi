@@ -18,6 +18,7 @@ namespace Input
         for (int i = 0; i < axisCount; i++) {
             axis[i] = axisTemp[i];
         }
+        std::cout << "Buttons: " << buttonCount << "\n";
 
         for (int i = 0; i < buttonCount; i++) {
             buttons[i] = buttonsTemp[i];
