@@ -148,17 +148,17 @@ SpaceGameApp::Run()
     // game loop.
     ReadScore();
     while (this->window->IsOpen()){
-        frame = (frame + 1) % 10;
-        if (frame == 0)
-        {
-#ifdef __linux__
-            system("clear");
-#elif _WIN32
-            system("cls");
-#endif
-            for (auto i : Gamepad->buttonstates)
-                std::cout << i.held << "\n";
-        }
+//        frame = (frame + 1) % 10;
+//        if (frame == 0)
+//        {
+//#ifdef __linux__
+//            system("clear");
+//#elif _WIN32
+//            system("cls");
+//#endif
+//            for (auto i : Gamepad->buttonstates)
+//                std::cout << i.held << "\n";
+//        }
         auto timeStart = std::chrono::steady_clock::now();
 		glClear(GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_DEPTH_TEST);

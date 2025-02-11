@@ -18,7 +18,6 @@ namespace Input
         for (int i = 0; i < axisCount; i++) {
             axis[i] = axisTemp[i];
         }
-        std::cout << "Buttons: " << buttonCount << "\n";
 
         for (int i = 0; i < buttonCount; i++) {
             buttons[i] = buttonsTemp[i];
@@ -64,21 +63,33 @@ namespace Input
             std::cout << "NO CONTROLLER \n";
             return 0;
         }
+#ifdef __linux__
+        return axis[3];
+#elif _WIN32
         return axis[2];
+#endif
     }
     float Gamepad::GetRightJoystickY() {
         if (axisCount == 0) {
             std::cout << "NO CONTROLLER \n";
             return 0;
         }
+#ifdef __linux__
+        return axis[4];
+#elif _WIN32
         return axis[3];
+#endif
     }
     float Gamepad::GetLeftTrigger() {
         if (axisCount == 0) {
             std::cout << "NO CONTROLLER \n";
             return 0;
         }
+#ifdef __linux__
+        return axis[2];
+#elif _WIN32
         return axis[4];
+#endif
     }
     float Gamepad::GetRightTrigger() {
         if (axisCount == 0) {
