@@ -280,16 +280,18 @@ SpaceGameApp::RenderUI(NVGcontext* vg)
     if (ball.state == Game::PlayState::BeforePlay) {
         // If before play I want to dislpay the in play info too.
         nvgText(vg, width-200, 30, "High Scores", NULL);
-        for (size_t i = 0; i < 5; i++)
-        {
-            const char* highscoreC = highscores[mapIndex][i].name;
-            std::string highscoreS = highscoreC;
-            highscoreS[3] = ':';
+		for (size_t i = 0; i < 5; i++)
+		{
+			if (highscores[mapIndex][i].hits == 0)
+				break;
+			const char* highscoreC = highscores[mapIndex][i].name;
+			std::string highscoreS = highscoreC;
+			highscoreS[3] = ':';
 
-            // Skip in the ascii table to the numbers.
-            highscoreS[4]=(highscores[mapIndex][i].hits) + (char)'0';
-            nvgText(vg, width-200, 70+30*i, highscoreS.c_str(), NULL);
-        }
+			// Skip in the ascii table to the numbers.
+			highscoreS[4] = (highscores[mapIndex][i].hits) + (char)'0';
+			nvgText(vg, width - 200, 70 + 30 * i, highscoreS.c_str(), NULL);
+		}
 
         goto inplay;
     }
@@ -427,9 +429,9 @@ SpaceGameApp::InsertScore() {
     }
     else {
         //Find which index to insert at
-        unsigned short index;
+        unsigned short index = 0;
         for (short i = 4; i >= 0; i--){
-            if (highscores[mapIndex][i].hits >= ball.hits) {
+            if (highscores[mapIndex][i].hits >= ball.hits || highscores[mapIndex][i].hits == 0) {
                 index = i;
             }
         }        
@@ -448,6 +450,12 @@ SpaceGameApp::ReadScore() {
     
     if (!file.is_open()) {
         std::cerr << "Error opening the file!" << "\n";
+        for (int i = 0; i < 3; ++i) {
+            for (int j = 0; j < 5; ++j) {
+                std::strncpy(highscores[i][j].name, "", sizeof(highscores[i][j].name));
+                highscores[i][j].hits = 0;
+            }
+        }
         return;
     }
 

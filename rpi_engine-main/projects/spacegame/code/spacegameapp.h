@@ -56,9 +56,11 @@ private:
 
 	const char* fileName = "HighScores.txt";
 	//Name of player
-	char name[3] = { 'A' , 'A', 'A' };
+	char name[4] = { 'A' , 'A', 'A', '\0'};
 	short charIndex = 0;
 	unsigned short mapIndex;
+	//If any scores were read
+	bool highscoreExist;
 
 	Input::Gamepad *Gamepad;
 	Input::Keyboard *kbd;
