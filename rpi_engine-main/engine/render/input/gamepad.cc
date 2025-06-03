@@ -19,7 +19,7 @@ namespace Input
             axis[i] = axisTemp[i];
         }
 
-        for (int i = 0; i < buttonCount; i++) {
+        for (int i = 0; i < __NUM_BUTTONS__; i++) {
             buttons[i] = buttonsTemp[i];
             if (buttons[i] == GLFW_PRESS) {
                 if (buttonstates[i].justPressed || buttonstates[i].held) {
